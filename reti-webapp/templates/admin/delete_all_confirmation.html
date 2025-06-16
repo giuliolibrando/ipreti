@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; {% trans 'Elimina tutti gli indirizzi IP' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <div class="module">
+        <h2>{% trans 'Elimina tutti gli indirizzi IP' %}</h2>
+        <div class="alert alert-warning">
+            <p>{% blocktrans with count=count %}Stai per eliminare <strong>{{ count }}</strong> indirizzi IP. Questa operazione non può essere annullata.{% endblocktrans %}</p>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="submit-row">
+                <input type="submit" name="confirm" value="{% trans 'Sì, elimina tutti gli indirizzi IP' %}" class="default" />
+                <a href="{% url opts|admin_urlname:'changelist' %}" class="button cancel-link">{% trans 'No, torna indietro' %}</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

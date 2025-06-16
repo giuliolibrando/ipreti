@@ -1,0 +1,844 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-16 10:30+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Base template strings
+msgid "IP Reti - Università di Roma"
+msgstr "IP Networks - University of Rome"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Ricerca IP"
+msgstr "IP Search"
+
+msgid "IP Assegnati"
+msgstr "Assigned IPs"
+
+msgid "Richiedi IP"
+msgstr "Request IP"
+
+msgid "Amministrazione"
+msgstr "Administration"
+
+msgid "Admin Django"
+msgstr "Django Admin"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Profilo"
+msgstr "Profile"
+
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Chiudi"
+msgstr "Close"
+
+# Dashboard strings
+msgid "IP Totali"
+msgstr "Total IPs"
+
+msgid "IP Attivi"
+msgstr "Active IPs"
+
+msgid "IP Assegnati ma Non Usati"
+msgstr "Assigned but Not Used IPs"
+
+msgid "IP in Scadenza"
+msgstr "Expiring IPs"
+
+msgid "IP Recentemente Modificati"
+msgstr "Recently Modified IPs"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Stato"
+msgstr "Status"
+
+msgid "Responsabile"
+msgstr "Responsible"
+
+msgid "Note"
+msgstr "Notes"
+
+msgid "Ultima modifica"
+msgstr "Last modified"
+
+msgid "Scadenza"
+msgstr "Expiration"
+
+msgid "Stato Indirizzi IP"
+msgstr "IP Address Status"
+
+msgid "VLAN più utilizzate"
+msgstr "Most Used VLANs"
+
+msgid "Nome"
+msgstr "Name"
+
+msgid "Indirizzi IP"
+msgstr "IP Addresses"
+
+msgid "I tuoi indirizzi IP"
+msgstr "Your IP addresses"
+
+msgid "Utente finale"
+msgstr "End User"
+
+msgid "IP in scadenza"
+msgstr "Expiring IPs"
+
+msgid "Attivi"
+msgstr "Active"
+
+msgid "Assegnati Non Usati"
+msgstr "Assigned Not Used"
+
+msgid "In Scadenza"
+msgstr "Expiring"
+
+msgid "Nessun indirizzo IP modificato di recente."
+msgstr "No IP addresses modified recently."
+
+msgid "Nessun indirizzo IP in scadenza nei prossimi 30 giorni."
+msgstr "You don't have any IP addresses expiring in the next 30 days."
+
+msgid "Nessuna VLAN disponibile."
+msgstr "No VLANs available."
+
+msgid "Non hai ancora indirizzi IP assegnati."
+msgstr "You don't have any assigned IP addresses yet."
+
+msgid "Non hai indirizzi IP in scadenza nei prossimi 30 giorni."
+msgstr "You don't have any IP addresses expiring in the next 30 days."
+
+# Authentication messages
+msgid "Credenziali non valide"
+msgstr "Invalid credentials"
+
+msgid "Il tuo account non è abilitato al login. Contatta l'amministratore."
+msgstr "Your account is not enabled for login. Contact the administrator."
+
+# IP Status messages
+msgid "Libero"
+msgstr "Free"
+
+msgid "Utilizzato"
+msgstr "Used"
+
+msgid "Non assegnabile"
+msgstr "Not assignable"
+
+msgid "Attivo"
+msgstr "Active"
+
+msgid "Inattivo"
+msgstr "Inactive"
+
+# Form labels and buttons
+msgid "Email"
+msgstr "Email"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Accedi"
+msgstr "Login"
+
+msgid "Cerca"
+msgstr "Search"
+
+msgid "Filtra"
+msgstr "Filter"
+
+msgid "Reset"
+msgstr "Reset"
+
+msgid "Salva"
+msgstr "Save"
+
+msgid "Annulla"
+msgstr "Cancel"
+
+msgid "Conferma"
+msgstr "Confirm"
+
+# Table headers
+msgid "Indirizzo IP"
+msgstr "IP Address"
+
+msgid "Disponibilità"
+msgstr "Availability"
+
+msgid "VLAN"
+msgstr "VLAN"
+
+msgid "Ultimo controllo"
+msgstr "Last Check"
+
+msgid "Azioni"
+msgstr "Actions"
+
+# Messages
+msgid "Nessun risultato trovato."
+msgstr "No results found."
+
+msgid "Operazione completata con successo."
+msgstr "Operation completed successfully."
+
+msgid "Si è verificato un errore."
+msgstr "An error occurred."
+
+# User profile
+msgid "Login abilitato"
+msgstr "Login enabled"
+
+msgid "L'utente può effettuare il login al sistema"
+msgstr "The user can log in to the system"
+
+# IP Request form
+msgid "Seleziona VLAN"
+msgstr "Select VLAN"
+
+msgid "Motivazione richiesta"
+msgstr "Request reason"
+
+msgid "Invia richiesta"
+msgstr "Submit request"
+
+# Admin actions
+msgid "Abilita login"
+msgstr "Enable login"
+
+msgid "Disabilita login"
+msgstr "Disable login"
+
+msgid "Login abilitato per gli utenti selezionati"
+msgstr "Login enabled for selected users"
+
+msgid "Login disabilitato per gli utenti selezionati"
+msgstr "Login disabled for selected users"
+
+# Login page
+msgid "Accesso al sistema"
+msgstr "System Access"
+
+msgid "Nome utente"
+msgstr "Username"
+
+msgid "Ricordami"
+msgstr "Remember me"
+
+msgid "Accedi con le tue credenziali"
+msgstr "Login with your credentials"
+
+msgid "My Organization"
+msgstr "My Organization"
+
+# Ricerca IP template
+msgid "IP Anomali"
+msgstr "Anomalous IPs"
+
+msgid "Stai visualizzando solo gli indirizzi IP in stato"
+msgstr "You are viewing only IP addresses in status"
+
+msgid "ANOMALO"
+msgstr "ANOMALOUS"
+
+msgid "Questi sono IP che risultano 'Attivi' (navigano in rete) ma sono 'Liberi' (non assegnati a nessun responsabile). Questa situazione indica un possibile problema di configurazione che richiede attenzione."
+msgstr "These are IPs that appear 'Active' (browsing the network) but are 'Free' (not assigned to any responsible person). This situation indicates a possible configuration problem that requires attention."
+
+msgid "Filtri"
+msgstr "Filters"
+
+msgid "Cerca IP"
+msgstr "Search IP"
+
+msgid "Cerca IP, MAC, responsabile, utente, note..."
+msgstr "Search IP, MAC, responsible, user, notes..."
+
+msgid "Ricerca in IP, MAC Address, Responsabile, Utente Finale e Note"
+msgstr "Search in IP, MAC Address, Responsible, End User and Notes"
+
+msgid "Stato Rete"
+msgstr "Network Status"
+
+msgid "Tutti"
+msgstr "All"
+
+msgid "Disattivo"
+msgstr "Inactive"
+
+msgid "Disponibilità / Anomali"
+msgstr "Availability / Anomalous"
+
+msgid "Solo disponibili"
+msgstr "Only available"
+
+msgid "Solo usati"
+msgstr "Only used"
+
+msgid "Solo riservati"
+msgstr "Only reserved"
+
+msgid "Solo anomali"
+msgstr "Only anomalous"
+
+msgid "Tutte"
+msgstr "All"
+
+msgid "Evidenzia IP con colori"
+msgstr "Highlight IPs with colors"
+
+msgid "Rosso"
+msgstr "Red"
+
+msgid "IP attivi e usati"
+msgstr "Active and used IPs"
+
+msgid "Arancione"
+msgstr "Orange"
+
+msgid "IP anomali"
+msgstr "Anomalous IPs"
+
+msgid "Verde"
+msgstr "Green"
+
+msgid "IP disattivi e liberi"
+msgstr "Inactive and free IPs"
+
+msgid "Grigio"
+msgstr "Gray"
+
+msgid "IP riservati"
+msgstr "Reserved IPs"
+
+msgid "Risultati Ricerca IP"
+msgstr "IP Search Results"
+
+msgid "Richiedi nuovo IP"
+msgstr "Request new IP"
+
+msgid "IP VALIDO TROVATO"
+msgstr "VALID IP FOUND"
+
+msgid "L'indirizzo IP"
+msgstr "The IP address"
+
+msgid "che hai cercato non esiste ancora nel database, ma è un IP valido e disponibile. Puoi richiederlo cliccando sul pulsante 'Richiedi IP' qui sotto, e verrà automaticamente creato e assegnato a te."
+msgstr "you searched for does not exist in the database yet, but it is a valid and available IP. You can request it by clicking the 'Request IP' button below, and it will be automatically created and assigned to you."
+
+msgid "Legenda Colori"
+msgstr "Color Legend"
+
+msgid "IP attivi e usati (funzionamento normale)"
+msgstr "Active and used IPs (normal operation)"
+
+msgid "IP anomali (attivi ma liberi)"
+msgstr "Anomalous IPs (active but free)"
+
+msgid "IP disattivi e liberi (disponibili)"
+msgstr "Inactive and free IPs (available)"
+
+msgid "MAC Address"
+msgstr "MAC Address"
+
+msgid "Attivo (ANOMALO)"
+msgstr "Active (ANOMALOUS)"
+
+msgid "Libero (ANOMALO)"
+msgstr "Free (ANOMALOUS)"
+
+msgid "Senza responsabile"
+msgstr "Without responsible"
+
+msgid "Riservato"
+msgstr "Reserved"
+
+msgid "Usato"
+msgstr "Used"
+
+msgid "IP non in database"
+msgstr "IP not in database"
+
+msgid "IP valido ma non in database"
+msgstr "Valid IP but not in database"
+
+msgid "IP ANOMALO"
+msgstr "ANOMALOUS IP"
+
+msgid "IP attivo senza responsabile"
+msgstr "Active IP without responsible"
+
+msgid "Non richiedibile"
+msgstr "Not requestable"
+
+msgid "RISERVATO"
+msgstr "RESERVED"
+
+msgid "Richiedi questo IP"
+msgstr "Request this IP"
+
+msgid "Dettagli"
+msgstr "Details"
+
+msgid "Nessun indirizzo IP trovato"
+msgstr "No IP addresses found"
+
+msgid "Navigazione pagine"
+msgstr "Page navigation"
+
+msgid "Prima"
+msgstr "First"
+
+msgid "Precedente"
+msgstr "Previous"
+
+msgid "Successiva"
+msgstr "Next"
+
+msgid "Ultima"
+msgstr "Last"
+
+msgid "Pagina"
+msgstr "Page"
+
+msgid "di"
+msgstr "of"
+
+msgid "indirizzi totali"
+msgstr "total addresses"
+
+# Django Admin translations
+msgid "Elimina gli indirizzi IP selezionati"
+msgstr "Delete selected IP addresses"
+
+msgid "Eliminati {} indirizzi IP con successo."
+msgstr "Successfully deleted {} IP addresses."
+
+msgid "Conferma eliminazione di tutti gli indirizzi IP"
+msgstr "Confirm deletion of all IP addresses"
+
+msgid "Informazioni Principali"
+msgstr "Main Information"
+
+msgid "Assegnazione"
+msgstr "Assignment"
+
+msgid "Date"
+msgstr "Dates"
+
+# Model field names
+msgid "indirizzo IP"
+msgstr "IP address"
+
+msgid "MAC address"
+msgstr "MAC address"
+
+msgid "stato"
+msgstr "status"
+
+msgid "disponibilità"
+msgstr "availability"
+
+msgid "responsabile"
+msgstr "responsible"
+
+msgid "utente finale"
+msgstr "end user"
+
+msgid "ultimo controllo"
+msgstr "last check"
+
+msgid "data creazione"
+msgstr "creation date"
+
+msgid "data modifica"
+msgstr "modification date"
+
+msgid "data scadenza"
+msgstr "expiration date"
+
+msgid "note"
+msgstr "notes"
+
+msgid "assegnato a utente"
+msgstr "assigned to user"
+
+# Model verbose names - keeping VLAN and Indirizzi IP here as they are in different contexts
+msgid "VLANs"
+msgstr "VLANs"
+
+msgid "Storico Responsabile"
+msgstr "Responsible History"
+
+msgid "Storici Responsabili"
+msgstr "Responsible Histories"
+
+# Field choices
+msgid "attivo"
+msgstr "active"
+
+msgid "inattivo"
+msgstr "inactive"
+
+msgid "libero"
+msgstr "free"
+
+msgid "usato"
+msgstr "used"
+
+msgid "riservato"
+msgstr "reserved"
+
+# IP Detail Page
+msgid "Dettaglio IP"
+msgstr "IP Details"
+
+msgid "IP ANOMALO RILEVATO"
+msgstr "ANOMALOUS IP DETECTED"
+
+msgid "Questo indirizzo IP risulta"
+msgstr "This IP address appears"
+
+msgid "ATTIVO"
+msgstr "ACTIVE"
+
+msgid "sta navigando in rete"
+msgstr "is browsing the network"
+
+msgid "ma è"
+msgstr "but is"
+
+msgid "LIBERO"
+msgstr "FREE"
+
+msgid "o non ha un responsabile assegnato"
+msgstr "or has no assigned responsible person"
+
+msgid "Questa situazione indica un possibile problema di configurazione che richiede attenzione immediata."
+msgstr "This situation indicates a possible configuration problem that requires immediate attention."
+
+msgid "Informazioni Indirizzo IP"
+msgstr "IP Address Information"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "Modifica abilitata"
+msgstr "Edit enabled"
+
+msgid "Informazioni Temporali"
+msgstr "Time Information"
+
+msgid "Data Scadenza"
+msgstr "Expiration Date"
+
+msgid "Scaduto"
+msgstr "Expired"
+
+msgid "Scade tra"
+msgstr "Expires in"
+
+msgid "giorni"
+msgstr "days"
+
+msgid "Data Creazione"
+msgstr "Creation Date"
+
+msgid "Non assegnabile temporaneamente"
+msgstr "Temporarily not assignable"
+
+msgid "Assegnato a"
+msgstr "Assigned to"
+
+msgid "Inserisci email responsabile"
+msgstr "Enter responsible email"
+
+msgid "Inserisci nome utente finale"
+msgstr "Enter end user name"
+
+msgid "Inserisci note aggiuntive"
+msgstr "Enter additional notes"
+
+msgid "Salva Modifiche"
+msgstr "Save Changes"
+
+msgid "Nessuna nota disponibile"
+msgstr "No notes available"
+
+msgid "Torna alla lista"
+msgstr "Back to list"
+
+msgid "Elimina"
+msgstr "Delete"
+
+msgid "Sei sicuro di voler eliminare questo indirizzo IP?"
+msgstr "Are you sure you want to delete this IP address?"
+
+# Request IP Page
+msgid "Richiedi Nuovo Indirizzo IP"
+msgstr "Request New IP Address"
+
+msgid "Richiesta Nuovo Indirizzo IP"
+msgstr "New IP Address Request"
+
+msgid "Compila il modulo sottostante per richiedere un nuovo indirizzo IP. Una volta inviata la richiesta, riceverai una conferma."
+msgstr "Fill out the form below to request a new IP address. Once the request is submitted, you will receive a confirmation."
+
+msgid "Indirizzo IP (se ne conosci uno disponibile)"
+msgstr "IP Address (if you know an available one)"
+
+msgid "es. 192.168.1.1"
+msgstr "e.g. 192.168.1.1"
+
+msgid "Se lasciato vuoto, ti verrà assegnato un IP disponibile."
+msgstr "If left blank, you will be assigned an available IP."
+
+msgid "MAC Address (opzionale)"
+msgstr "MAC Address (optional)"
+
+msgid "es. 00:1A:2B:3C:4D:5E"
+msgstr "e.g. 00:1A:2B:3C:4D:5E"
+
+msgid "Formato: XX:XX:XX:XX:XX:XX"
+msgstr "Format: XX:XX:XX:XX:XX:XX"
+
+msgid "Nome del responsabile"
+msgstr "Responsible person name"
+
+msgid "Email Responsabile"
+msgstr "Responsible Email"
+
+msgid "email@esempio.it"
+msgstr "email@example.com"
+
+msgid "Nome dell'utente finale"
+msgstr "End user name"
+
+msgid "Assegnazione automatica"
+msgstr "Automatic assignment"
+
+msgid "La VLAN verrà assegnata automaticamente in base alla subnet dell'IP"
+msgstr "The VLAN will be automatically assigned based on the IP subnet"
+
+msgid "Inserisci eventuali note o dettagli aggiuntivi sulla richiesta"
+msgstr "Enter any notes or additional details about the request"
+
+msgid "Indietro"
+msgstr "Back"
+
+msgid "Invia Richiesta"
+msgstr "Submit Request"
+
+msgid "Formato MAC address non valido. Usa il formato XX:XX:XX:XX:XX:XX"
+msgstr "Invalid MAC address format. Use format XX:XX:XX:XX:XX:XX"
+
+msgid "Formato IP non valido"
+msgstr "Invalid IP format"
+
+msgid "IP non nel range consentito. Usa range privati (192.168.x.x, 10.x.x.x, 172.16-31.x.x)"
+msgstr "IP not in allowed range. Use private ranges (192.168.x.x, 10.x.x.x, 172.16-31.x.x)"
+
+msgid "Controllo disponibilità..."
+msgstr "Checking availability..."
+
+msgid "Errore nella verifica"
+msgstr "Verification error"
+
+msgid "IP già in uso da"
+msgstr "IP already in use by"
+
+msgid "un altro utente"
+msgstr "another user"
+
+msgid "IP in stato anomalo (contatta l'amministratore)"
+msgstr "IP in anomalous state (contact administrator)"
+
+msgid "IP disponibile"
+msgstr "IP available"
+
+msgid "IP disponibile (nuovo)"
+msgstr "IP available (new)"
+
+msgid "Errore nella verifica disponibilità"
+msgstr "Error checking availability"
+
+# IP Assegnati Page
+msgid "I Miei Indirizzi IP"
+msgstr "My IP Addresses"
+
+msgid "Indirizzi IP Assegnati"
+msgstr "Assigned IP Addresses"
+
+msgid "Torna alla dashboard"
+msgstr "Back to dashboard"
+
+msgid "Torna alla Dashboard"
+msgstr "Back to Dashboard"
+
+msgid "Rilascia"
+msgstr "Release"
+
+# Admin import/export strings
+msgid "Importa CSV"
+msgstr "Import CSV"
+
+msgid "Esporta tutti CSV"
+msgstr "Export all CSV"
+
+msgid "Elimina tutti"
+msgstr "Delete all"
+
+msgid "Esporta tutte VLAN CSV"
+msgstr "Export all VLANs CSV"
+
+# Admin translations - additional strings
+msgid "Durata"
+msgstr "Duration"
+
+msgid "Esportati {} indirizzi IP selezionati."
+msgstr "Exported {} selected IP addresses."
+
+msgid "Esporta gli indirizzi IP selezionati in CSV"
+msgstr "Export selected IP addresses to CSV"
+
+msgid "Importa Indirizzi IP da CSV"
+msgstr "Import IP Addresses from CSV"
+
+msgid "Subnets"
+msgstr "Subnets"
+
+msgid "Esporta le VLAN selezionate in CSV"
+msgstr "Export selected VLANs to CSV"
+
+msgid "Importa VLAN da CSV"
+msgstr "Import VLANs from CSV"
+
+msgid "Login Abilitato"
+msgstr "Login Enabled"
+
+msgid "✅ Abilita login per utenti selezionati"
+msgstr "✅ Enable login for selected users"
+
+msgid "❌ Disabilita login per utenti selezionati"
+msgstr "❌ Disable login for selected users"
+
+# App name
+msgid "IP Network Management"
+msgstr "IP Network Management"
+
+# StoricoResponsabile field names
+msgid "Data Inizio Assegnazione"
+msgstr "Assignment Start Date"
+
+msgid "Data Fine Assegnazione"
+msgstr "Assignment End Date"
+
+msgid "Motivo Cambio"
+msgstr "Change Reason"
+
+msgid "Stato Rete al momento"
+msgstr "Network Status at the time"
+
+msgid "Disponibilità al momento"
+msgstr "Availability at the time"
+
+msgid "VLAN al momento"
+msgstr "VLAN at the time"
+
+msgid "Creato il"
+msgstr "Created on"
+
+msgid "Creato da"
+msgstr "Created by"
+
+msgid "Sistema o utente che ha creato il record"
+msgstr "System or user who created the record"
+
+# StoricoResponsabile choice values
+msgid "Assegnazione Iniziale"
+msgstr "Initial Assignment"
+
+msgid "Rilascio Volontario"
+msgstr "Voluntary Release"
+
+msgid "Liberazione per Inattività"
+msgstr "Release due to Inactivity"
+
+msgid "Liberazione per Scadenza"
+msgstr "Release due to Expiration"
+
+msgid "Cambio Responsabile"
+msgstr "Responsible Change"
+
+msgid "Pulizia Automatica"
+msgstr "Automatic Cleanup"
+
+msgid "Modifica Amministratore"
+msgstr "Administrator Modification"
+
+# VLAN detail page translations
+msgid "Totale IP"
+msgstr "Total IPs"
+
+msgid "IP Usati"
+msgstr "Used IPs"
+
+msgid "IP Liberi"
+msgstr "Free IPs"
+
+msgid "Informazioni VLAN"
+msgstr "VLAN Information"
+
+msgid "VLAN ID"
+msgstr "VLAN ID"
+
+msgid "Descrizione"
+msgstr "Description"
+
+msgid "Subnet"
+msgstr "Subnet"
+
+msgid "Gateway"
+msgstr "Gateway"
+
+msgid "Indirizzi IP in questa VLAN"
+msgstr "IP Addresses in this VLAN"
+
+msgid "indirizzi"
+msgstr "addresses"
+
+msgid "Anomalo"
+msgstr "Anomalous"
+
+msgid "Mai"
+msgstr "Never"
+
+msgid "Modifica VLAN"
+msgstr "Edit VLAN"
+
+msgid "Elenco degli indirizzi IP assegnati alla VLAN %(numero)s (%(nome)s)"
+msgstr "List of IP addresses assigned to VLAN %(numero)s (%(nome)s)"
+
+msgid "Nessun indirizzo IP trovato per la VLAN %(numero)s."
+msgstr "No IP addresses found for VLAN %(numero)s." 

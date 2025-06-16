@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "I Miei Indirizzi IP" %}{% endblock %}
+
+{% block page_title %}{% trans "I Miei Indirizzi IP" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">{% trans "Indirizzi IP Assegnati" %}</h6>
+            <a href="{% url 'richiedi_nuovo_ip' %}" class="btn btn-sm btn-primary">{% trans "Richiedi nuovo IP" %}</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>{% trans "IP" %}</th>
+                            <th>{% trans "MAC Address" %}</th>
+                            <th>{% trans "Stato Rete" %}</th>
+                            <th>{% trans "VLAN" %}</th>
+                            <th>{% trans "Utente finale" %}</th>
+                            <th>{% trans "Note" %}</th>
+                            <th>{% trans "Azioni" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ip in indirizzi %}
+                        <tr>
+                            <td><a href="{% url 'indirizzo_ip_detail' ip=ip.ip %}">{{ ip.ip }}</a></td>
+                            <td>{{ ip.mac_address|default:"-" }}</td>
+                            <td>
+                                {% if ip.stato == 'attivo' %}
+                                    <span class="badge bg-success">{% trans "Attivo" %}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{% trans "Disattivo" %}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ip.vlan %}
+                                    {{ ip.vlan.numero }} - {{ ip.vlan.nome }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ ip.utente_finale|default:"-" }}</td>
+                            <td>{{ ip.note|default:"-"|truncatechars:50 }}</td>
+                            <td>
+                                <a href="{% url 'indirizzo_ip_detail' ip=ip.ip %}" class="btn btn-sm btn-primary me-1">
+                                    <i class="bi bi-eye"></i> {% trans "Dettagli" %}
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confermaRilascio('{{ ip.ip }}')">
+                                    <i class="bi bi-x-circle"></i> {% trans "Rilascia" %}
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">{% trans "Non hai ancora indirizzi IP assegnati." %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> {% trans "Torna alla dashboard" %}
+        </a>
+    </div>
+    
+    <!-- Form nascosto per il rilascio IP -->
+    <form id="rilasciaForm" method="post" style="display: none;">
+        {% csrf_token %}
+        <input type="hidden" id="ipToRelease" name="ip" value="">
+    </form>
+</div>
+
+{% block extra_js %}
+<script>
+function confermaRilascio(ip) {
+    if (confirm(`Sei sicuro di voler rilasciare l'IP ${ip}?\n\nQuesta operazione:\n• Imposterà l'IP come "Libero"\n• Rimuoverà responsabile e utente finale\n• Rimuoverà l'assegnazione a te\n\nL'operazione NON può essere annullata.`)) {
+        document.getElementById('ipToRelease').value = ip;
+        document.getElementById('rilasciaForm').action = `/ips/release/${ip}/`;
+        document.getElementById('rilasciaForm').submit();
+    }
+}
+</script>
+{% endblock %}
+{% endblock %} 

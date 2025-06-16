@@ -1,0 +1,186 @@
+# Italian translation for IP Reti
+# Copyright (C) 2025 Università di Roma
+# This file is distributed under the same license as the IP Reti package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: IP Reti 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-16 10:30+0100\n"
+"PO-Revision-Date: 2025-01-16 10:30+0100\n"
+"Last-Translator: Admin <admin@uniroma1.it>\n"
+"Language-Team: Italian <admin@uniroma1.it>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Base template strings
+msgid "IP Reti - Università di Roma"
+msgstr "IP Reti - Università di Roma"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Ricerca IP"
+msgstr "Ricerca IP"
+
+msgid "IP Assegnati"
+msgstr "IP Assegnati"
+
+msgid "Richiedi IP"
+msgstr "Richiedi IP"
+
+msgid "Amministrazione"
+msgstr "Amministrazione"
+
+msgid "Admin Django"
+msgstr "Admin Django"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Profilo"
+msgstr "Profilo"
+
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Chiudi"
+msgstr "Chiudi"
+
+# Authentication messages
+msgid "Credenziali non valide"
+msgstr "Credenziali non valide"
+
+msgid "Il tuo account non è abilitato al login. Contatta l'amministratore."
+msgstr "Il tuo account non è abilitato al login. Contatta l'amministratore."
+
+# IP Status messages
+msgid "Libero"
+msgstr "Libero"
+
+msgid "Utilizzato"
+msgstr "Utilizzato"
+
+msgid "Non assegnabile"
+msgstr "Non assegnabile"
+
+msgid "Attivo"
+msgstr "Attivo"
+
+msgid "Inattivo"
+msgstr "Inattivo"
+
+# Form labels and buttons
+msgid "Email"
+msgstr "Email"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Accedi"
+msgstr "Accedi"
+
+msgid "Cerca"
+msgstr "Cerca"
+
+msgid "Filtra"
+msgstr "Filtra"
+
+msgid "Reset"
+msgstr "Reset"
+
+msgid "Salva"
+msgstr "Salva"
+
+msgid "Annulla"
+msgstr "Annulla"
+
+msgid "Conferma"
+msgstr "Conferma"
+
+# Table headers
+msgid "Indirizzo IP"
+msgstr "Indirizzo IP"
+
+msgid "Stato"
+msgstr "Stato"
+
+msgid "Disponibilità"
+msgstr "Disponibilità"
+
+msgid "VLAN"
+msgstr "VLAN"
+
+msgid "Responsabile"
+msgstr "Responsabile"
+
+msgid "Utente finale"
+msgstr "Utente finale"
+
+msgid "Ultimo controllo"
+msgstr "Ultimo controllo"
+
+msgid "Note"
+msgstr "Note"
+
+msgid "Azioni"
+msgstr "Azioni"
+
+# Messages
+msgid "Nessun risultato trovato."
+msgstr "Nessun risultato trovato."
+
+msgid "Operazione completata con successo."
+msgstr "Operazione completata con successo."
+
+msgid "Si è verificato un errore."
+msgstr "Si è verificato un errore."
+
+# User profile
+msgid "Login abilitato"
+msgstr "Login abilitato"
+
+msgid "L'utente può effettuare il login al sistema"
+msgstr "L'utente può effettuare il login al sistema"
+
+# IP Request form
+msgid "Seleziona VLAN"
+msgstr "Seleziona VLAN"
+
+msgid "Motivazione richiesta"
+msgstr "Motivazione richiesta"
+
+msgid "Invia richiesta"
+msgstr "Invia richiesta"
+
+# Admin actions
+msgid "Abilita login"
+msgstr "Abilita login"
+
+msgid "Disabilita login"
+msgstr "Disabilita login"
+
+msgid "Login abilitato per gli utenti selezionati"
+msgstr "Login abilitato per gli utenti selezionati"
+
+msgid "Login disabilitato per gli utenti selezionati"
+msgstr "Login disabilitato per gli utenti selezionati"
+
+# Login page
+msgid "Accesso al sistema"
+msgstr "Accesso al sistema"
+
+msgid "Nome utente"
+msgstr "Nome utente"
+
+msgid "Ricordami"
+msgstr "Ricordami"
+
+msgid "Accedi con le tue credenziali"
+msgstr "Accedi con le tue credenziali"
+
+msgid "Organizzazione"
+msgstr "Organizzazione" 

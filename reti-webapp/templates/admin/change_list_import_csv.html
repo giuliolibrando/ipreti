@@ -1,0 +1,29 @@
+{% extends 'admin/change_list.html' %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+    <li>
+        <a href="{{ import_csv_url }}" class="addlink">
+            {% translate "Importa CSV" %}
+        </a>
+    </li>
+    {% if cl.opts.model_name == 'indirizzoip' %}
+    <li>
+        <a href="{{ export_all_csv_url }}" class="viewlink">
+            {% translate "Esporta tutti CSV" %}
+        </a>
+    </li>
+    <li>
+        <a href="{{ delete_all_url }}" class="deletelink">
+            {% translate "Elimina tutti" %}
+        </a>
+    </li>
+    {% elif cl.opts.model_name == 'vlan' %}
+    <li>
+        <a href="{{ export_all_csv_url }}" class="viewlink">
+            {% translate "Esporta tutte VLAN CSV" %}
+        </a>
+    </li>
+    {% endif %}
+{% endblock %} 

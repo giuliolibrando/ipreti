@@ -1,0 +1,2 @@
+Questo file è solo un placeholder per assicurarsi che la directory static/images venga creata.
+Il logo dell'Università di Roma La Sapienza dovrebbe essere posizionato in questa directory con il nome "logo.png". 

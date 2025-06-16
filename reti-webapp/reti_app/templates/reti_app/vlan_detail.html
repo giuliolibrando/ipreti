@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block page_title %}{{ title }} ({{ count }} IP){% endblock %}
+
+{% block content %}
+<!-- Statistiche VLAN -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">{% trans "Totale IP" %}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-globe fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">{% trans "IP Attivi" %}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ip_attivi_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-check-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">{% trans "IP Usati" %}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ip_usati_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-person-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">{% trans "IP Liberi" %}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ip_liberi_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-unlock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Informazioni VLAN -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">{% trans "Informazioni VLAN" %}</h6>
+            <span class="badge bg-primary">VLAN {{ vlan.numero }}</span>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-borderless">
+                    <tr>
+                        <th class="w-25">{% trans "VLAN ID" %}:</th>
+                        <td>{{ vlan.numero }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans "Nome" %}:</th>
+                        <td>{{ vlan.nome }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans "Descrizione" %}:</th>
+                        <td>{{ vlan.descrizione|default:"-" }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-borderless">
+                    <tr>
+                        <th class="w-25">{% trans "Subnet" %}:</th>
+                        <td>
+                            {% if vlan.subnets %}
+                                {% for subnet in vlan.subnets.split %}
+                                    <span class="badge bg-info me-1">{{ subnet }}</span>
+                                {% endfor %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{% trans "Gateway" %}:</th>
+                        <td>{{ vlan.gateway|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans "Note" %}:</th>
+                        <td>{{ vlan.descrizione|default:"-" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista IP della VLAN -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">{% trans "Indirizzi IP in questa VLAN" %}</h6>
+            <span class="badge bg-primary">{{ count }} {% trans "indirizzi" %}</span>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        <p class="text-muted mb-4">{{ description }}</p>
+        
+        {% if ip_list %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>{% trans "IP" %}</th>
+                        <th>{% trans "MAC Address" %}</th>
+                        <th>{% trans "Stato" %}</th>
+                        <th>{% trans "Disponibilità" %}</th>
+                        <th>{% trans "Responsabile" %}</th>
+                        <th>{% trans "Utente Finale" %}</th>
+                        <th>{% trans "Assegnato a" %}</th>
+                        <th>{% trans "Ultimo Controllo" %}</th>
+                        <th>{% trans "Azioni" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ip in ip_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'indirizzo_ip_detail' ip=ip.ip %}" class="text-decoration-none">
+                                <strong>{{ ip.ip }}</strong>
+                            </a>
+                            {% if ip.is_anomalo %}
+                                <span class="badge bg-warning ms-1">{% trans "Anomalo" %}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if ip.mac_address %}
+                                <code>{{ ip.mac_address }}</code>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if ip.stato == 'attivo' %}
+                                <span class="badge bg-success">{% trans "Attivo" %}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{% trans "Disattivo" %}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if ip.disponibilita == 'libero' %}
+                                <span class="badge bg-info">{% trans "Libero" %}</span>
+                            {% elif ip.disponibilita == 'usato' %}
+                                <span class="badge bg-warning">{% trans "Usato" %}</span>
+                            {% elif ip.disponibilita == 'riservato' %}
+                                <span class="badge bg-danger">{% trans "Riservato" %}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ ip.responsabile|default:"-" }}</td>
+                        <td>{{ ip.utente_finale|default:"-" }}</td>
+                        <td>{{ ip.assegnato_a_utente|default:"-" }}</td>
+                        <td>
+                            {% if ip.ultimo_controllo %}
+                                {{ ip.ultimo_controllo|date:"d/m/Y H:i" }}
+                            {% else %}
+                                <span class="text-muted">{% trans "Mai" %}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'indirizzo_ip_detail' ip=ip.ip %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> {% trans "Dettagli" %}
+                            </a>
+                            {% if user.is_staff %}
+                            <a href="{% url 'admin:reti_app_indirizzoip_change' ip.ip %}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-gear"></i> {% trans "Admin" %}
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-wifi-off text-muted" style="font-size: 3rem;"></i>
+            <h5 class="mt-3">{{ empty_message }}</h5>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> {% trans "Torna alla Dashboard" %}
+    </a>
+    {% if user.is_staff %}
+    <a href="{% url 'admin:reti_app_vlan_change' vlan.numero %}" class="btn btn-outline-primary">
+        <i class="bi bi-gear"></i> {% trans "Modifica VLAN" %}
+    </a>
+    {% endif %}
+</div>
+{% endblock %} 

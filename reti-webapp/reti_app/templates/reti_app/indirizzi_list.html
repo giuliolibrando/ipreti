@@ -1,0 +1,445 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Ricerca IP" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+.sortable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.sortable-header:hover {
+    background-color: rgba(0, 123, 255, 0.1) !important;
+}
+
+.sortable-header .bi {
+    font-size: 0.8rem;
+    margin-left: 4px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">{% trans "Ricerca IP" %}</h1>
+    
+    {% if request.GET.anomalo == 'si' %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{% trans "IP Anomali" %}:</strong> {% trans "Stai visualizzando solo gli indirizzi IP in stato" %} <strong>{% trans "ANOMALO" %}</strong>. 
+        {% trans "Questi sono IP che risultano 'Attivi' (navigano in rete) ma sono 'Liberi' (non assegnati a nessun responsabile). Questa situazione indica un possibile problema di configurazione che richiede attenzione." %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Chiudi' %}"></button>
+    </div>
+    {% endif %}
+    
+    <!-- Filtri di ricerca -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{% trans "Filtri" %}</h6>
+        </div>
+        <div class="card-body">
+            <form method="GET" action="{% url 'indirizzi_ip_list' %}">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="ip">{% trans "Cerca IP" %}</label>
+                        <input type="text" class="form-control" id="ip" name="ip" placeholder="{% trans 'Cerca IP, MAC, responsabile, utente, note...' %}" value="{{ request.GET.ip|default:'' }}">
+                        <small class="form-text text-muted">{% trans "Ricerca in IP, MAC Address, Responsabile, Utente Finale e Note" %}</small>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="stato">{% trans "Stato Rete" %}</label>
+                        <select class="form-control" id="stato" name="stato">
+                            <option value="">{% trans "Tutti" %}</option>
+                            <option value="attivo" {% if request.GET.stato == 'attivo' %}selected{% endif %}>{% trans "Attivo" %}</option>
+                            <option value="disattivo" {% if request.GET.stato == 'disattivo' %}selected{% endif %}>{% trans "Disattivo" %}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="disponibilita_anomalo">{% trans "Disponibilità / Anomali" %}</label>
+                        <select class="form-control" id="disponibilita_anomalo" name="disponibilita_anomalo">
+                            <option value="">{% trans "Tutti" %}</option>
+                            <option value="libero" {% if request.GET.disponibilita_anomalo == 'libero' %}selected{% endif %}>{% trans "Solo disponibili" %}</option>
+                            <option value="usato" {% if request.GET.disponibilita_anomalo == 'usato' %}selected{% endif %}>{% trans "Solo usati" %}</option>
+                            <option value="riservato" {% if request.GET.disponibilita_anomalo == 'riservato' %}selected{% endif %}>{% trans "Solo riservati" %}</option>
+                            <option value="anomalo" {% if request.GET.disponibilita_anomalo == 'anomalo' %}selected{% endif %}>{% trans "Solo anomali" %}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="vlan">{% trans "VLAN" %}</label>
+                        <select class="form-control" id="vlan" name="vlan">
+                            <option value="">{% trans "Tutte" %}</option>
+                            {% for v in vlans %}
+                                <option value="{{ v.numero }}" {% if request.GET.vlan == v.numero|stringformat:"i" %}selected{% endif %}>
+                                    {{ v.numero }} - {{ v.nome }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="evidenzia_anomali" name="evidenzia_anomali" 
+                                   {% if request.GET.evidenzia_anomali == 'on' %}checked{% endif %}>
+                            <label class="form-check-label" for="evidenzia_anomali">
+                                <strong>{% trans "Evidenzia IP con colori" %}</strong>
+                            </label>
+                            <small class="form-text text-muted d-block">
+                                <span class="badge bg-danger text-white">{% trans "Rosso" %}</span>: {% trans "IP attivi e usati" %} |
+                                <span class="badge bg-warning text-dark">{% trans "Arancione" %}</span>: {% trans "IP anomali" %} |
+                                <span class="badge bg-success text-white">{% trans "Verde" %}</span>: {% trans "IP disattivi e liberi" %} |
+                                <span class="badge bg-secondary text-white">{% trans "Grigio" %}</span>: {% trans "IP riservati" %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">{% trans "Cerca" %}</button>
+                <a href="{% url 'indirizzi_ip_list' %}" class="btn btn-secondary">{% trans "Reset" %}</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabella Indirizzi IP -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">{% trans "Risultati Ricerca IP" %}</h6>
+            <a href="{% url 'richiedi_nuovo_ip' %}" class="btn btn-sm btn-primary">{% trans "Richiedi nuovo IP" %}</a>
+        </div>
+        <div class="card-body">
+            {% if ip_virtuale %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill me-2" style="font-size: 1.5rem;"></i>
+                    <div>
+                        <strong>🎯 {% trans "IP VALIDO TROVATO" %}</strong><br>
+                        <small>{% trans "L'indirizzo IP" %} <strong>{{ ip_virtuale.ip }}</strong> {% trans "che hai cercato non esiste ancora nel database, ma è un IP valido e disponibile. Puoi richiederlo cliccando sul pulsante 'Richiedi IP' qui sotto, e verrà automaticamente creato e assegnato a te." %}</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Chiudi' %}"></button>
+            </div>
+            {% endif %}
+            
+            {% if request.GET.evidenzia_anomali == 'on' %}
+            <div class="alert alert-info mb-3">
+                <strong>{% trans "Legenda Colori" %}:</strong>
+                <span class="badge bg-danger text-white ms-2">{% trans "Rosso" %}</span> {% trans "IP attivi e usati (funzionamento normale)" %} |
+                <span class="badge bg-warning text-dark ms-2">{% trans "Arancione" %}</span> {% trans "IP anomali (attivi ma liberi)" %} |
+                <span class="badge bg-success text-white ms-2">{% trans "Verde" %}</span> {% trans "IP disattivi e liberi (disponibili)" %}
+            </div>
+            {% endif %}
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>
+                                <a href="{% url 'indirizzi_ip_list' %}?{% for key, value in request.GET.items %}{% if key != 'order_by' and key != 'order_dir' %}{{ key }}={{ value }}&{% endif %}{% endfor %}order_by=ip&order_dir={% if current_order_by == 'ip' and current_order_dir == 'asc' %}desc{% else %}asc{% endif %}" 
+                                   class="text-decoration-none text-dark fw-bold sortable-header">
+                                    {% trans "IP" %}
+                                    {% if current_order_by == 'ip' %}
+                                        {% if current_order_dir == 'asc' %}
+                                            <i class="bi bi-arrow-up text-primary"></i>
+                                        {% else %}
+                                            <i class="bi bi-arrow-down text-primary"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        <i class="bi bi-arrow-up-down text-muted"></i>
+                                    {% endif %}
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{% url 'indirizzi_ip_list' %}?{% for key, value in request.GET.items %}{% if key != 'order_by' and key != 'order_dir' %}{{ key }}={{ value }}&{% endif %}{% endfor %}order_by=mac_address&order_dir={% if current_order_by == 'mac_address' and current_order_dir == 'asc' %}desc{% else %}asc{% endif %}" 
+                                   class="text-decoration-none text-dark fw-bold sortable-header">
+                                    {% trans "MAC Address" %}
+                                    {% if current_order_by == 'mac_address' %}
+                                        {% if current_order_dir == 'asc' %}
+                                            <i class="bi bi-arrow-up text-primary"></i>
+                                        {% else %}
+                                            <i class="bi bi-arrow-down text-primary"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        <i class="bi bi-arrow-up-down text-muted"></i>
+                                    {% endif %}
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{% url 'indirizzi_ip_list' %}?{% for key, value in request.GET.items %}{% if key != 'order_by' and key != 'order_dir' %}{{ key }}={{ value }}&{% endif %}{% endfor %}order_by=stato&order_dir={% if current_order_by == 'stato' and current_order_dir == 'asc' %}desc{% else %}asc{% endif %}" 
+                                   class="text-decoration-none text-dark fw-bold sortable-header">
+                                    {% trans "Stato Rete" %}
+                                    {% if current_order_by == 'stato' %}
+                                        {% if current_order_dir == 'asc' %}
+                                            <i class="bi bi-arrow-up text-primary"></i>
+                                        {% else %}
+                                            <i class="bi bi-arrow-down text-primary"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        <i class="bi bi-arrow-up-down text-muted"></i>
+                                    {% endif %}
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{% url 'indirizzi_ip_list' %}?{% for key, value in request.GET.items %}{% if key != 'order_by' and key != 'order_dir' %}{{ key }}={{ value }}&{% endif %}{% endfor %}order_by=disponibilita&order_dir={% if current_order_by == 'disponibilita' and current_order_dir == 'asc' %}desc{% else %}asc{% endif %}" 
+                                   class="text-decoration-none text-dark fw-bold sortable-header">
+                                    {% trans "Disponibilità" %}
+                                    {% if current_order_by == 'disponibilita' %}
+                                        {% if current_order_dir == 'asc' %}
+                                            <i class="bi bi-arrow-up text-primary"></i>
+                                        {% else %}
+                                            <i class="bi bi-arrow-down text-primary"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        <i class="bi bi-arrow-up-down text-muted"></i>
+                                    {% endif %}
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{% url 'indirizzi_ip_list' %}?{% for key, value in request.GET.items %}{% if key != 'order_by' and key != 'order_dir' %}{{ key }}={{ value }}&{% endif %}{% endfor %}order_by=vlan&order_dir={% if current_order_by == 'vlan' and current_order_dir == 'asc' %}desc{% else %}asc{% endif %}" 
+                                   class="text-decoration-none text-dark fw-bold sortable-header">
+                                    {% trans "VLAN" %}
+                                    {% if current_order_by == 'vlan' %}
+                                        {% if current_order_dir == 'asc' %}
+                                            <i class="bi bi-arrow-up text-primary"></i>
+                                        {% else %}
+                                            <i class="bi bi-arrow-down text-primary"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        <i class="bi bi-arrow-up-down text-muted"></i>
+                                    {% endif %}
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{% url 'indirizzi_ip_list' %}?{% for key, value in request.GET.items %}{% if key != 'order_by' and key != 'order_dir' %}{{ key }}={{ value }}&{% endif %}{% endfor %}order_by=responsabile&order_dir={% if current_order_by == 'responsabile' and current_order_dir == 'asc' %}desc{% else %}asc{% endif %}" 
+                                   class="text-decoration-none text-dark fw-bold sortable-header">
+                                    {% trans "Responsabile" %}
+                                    {% if current_order_by == 'responsabile' %}
+                                        {% if current_order_dir == 'asc' %}
+                                            <i class="bi bi-arrow-up text-primary"></i>
+                                        {% else %}
+                                            <i class="bi bi-arrow-down text-primary"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        <i class="bi bi-arrow-up-down text-muted"></i>
+                                    {% endif %}
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{% url 'indirizzi_ip_list' %}?{% for key, value in request.GET.items %}{% if key != 'order_by' and key != 'order_dir' %}{{ key }}={{ value }}&{% endif %}{% endfor %}order_by=utente_finale&order_dir={% if current_order_by == 'utente_finale' and current_order_dir == 'asc' %}desc{% else %}asc{% endif %}" 
+                                   class="text-decoration-none text-dark fw-bold sortable-header">
+                                    {% trans "Utente Finale" %}
+                                    {% if current_order_by == 'utente_finale' %}
+                                        {% if current_order_dir == 'asc' %}
+                                            <i class="bi bi-arrow-up text-primary"></i>
+                                        {% else %}
+                                            <i class="bi bi-arrow-down text-primary"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        <i class="bi bi-arrow-up-down text-muted"></i>
+                                    {% endif %}
+                                </a>
+                            </th>
+                            <th>{% trans "Note" %}</th>
+                            <th>
+                                <a href="{% url 'indirizzi_ip_list' %}?{% for key, value in request.GET.items %}{% if key != 'order_by' and key != 'order_dir' %}{{ key }}={{ value }}&{% endif %}{% endfor %}order_by=ultimo_controllo&order_dir={% if current_order_by == 'ultimo_controllo' and current_order_dir == 'asc' %}desc{% else %}asc{% endif %}" 
+                                   class="text-decoration-none text-dark fw-bold sortable-header">
+                                    {% trans "Ultimo Controllo" %}
+                                    {% if current_order_by == 'ultimo_controllo' %}
+                                        {% if current_order_dir == 'asc' %}
+                                            <i class="bi bi-arrow-up text-primary"></i>
+                                        {% else %}
+                                            <i class="bi bi-arrow-down text-primary"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        <i class="bi bi-arrow-up-down text-muted"></i>
+                                    {% endif %}
+                                </a>
+                            </th>
+                            <th>{% trans "Azioni" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ip in indirizzi %}
+                        <tr{% if request.GET.evidenzia_anomali == 'on' %}{% if ip.is_anomalo %} class="table-warning"{% elif ip.stato == 'attivo' and ip.disponibilita == 'usato' %} class="table-danger"{% elif ip.stato == 'disattivo' and ip.disponibilita == 'libero' %} class="table-success"{% endif %}{% endif %}>
+                            <td>
+                                {% if ip.is_virtual|default:False %}
+                                    {{ ip.ip }} <span class="badge bg-info text-white">NUOVO</span>
+                                {% else %}
+                                    <a href="{% url 'indirizzo_ip_detail' ip=ip.ip %}">{{ ip.ip }}</a>
+                                {% endif %}
+                            </td>
+                            <td>{{ ip.mac_address|default:"-" }}</td>
+                            <td>
+                                {% if ip.stato == 'attivo' %}
+                                    {% if ip.is_anomalo and request.GET.evidenzia_anomali == 'on' %}
+                                        <span class="badge bg-warning text-dark">{% trans "Attivo (ANOMALO)" %}</span>
+                                    {% elif ip.stato == 'attivo' and ip.disponibilita == 'usato' and request.GET.evidenzia_anomali == 'on' %}
+                                        <span class="badge bg-danger text-white">{% trans "Attivo" %}</span>
+                                    {% else %}
+                                        <span class="badge bg-success">{% trans "Attivo" %}</span>
+                                    {% endif %}
+                                {% else %}
+                                    {% if ip.stato == 'disattivo' and ip.disponibilita == 'libero' and request.GET.evidenzia_anomali == 'on' %}
+                                        <span class="badge bg-success text-white">{% trans "Disattivo" %}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{% trans "Disattivo" %}</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ip.disponibilita == 'libero' %}
+                                    {% if ip.is_anomalo and request.GET.evidenzia_anomali == 'on' %}
+                                        <span class="badge bg-warning text-dark">{% trans "Libero (ANOMALO)" %}</span>
+                                    {% elif ip.stato == 'disattivo' and request.GET.evidenzia_anomali == 'on' %}
+                                        <span class="badge bg-success text-white">{% trans "Libero" %}</span>
+                                    {% else %}
+                                        <span class="badge bg-info">{% trans "Libero" %}</span>
+                                    {% endif %}
+                                    {% if not ip.responsabile %}
+                                        <small class="d-block text-muted">⚠️ {% trans "Senza responsabile" %}</small>
+                                    {% endif %}
+                                {% elif ip.disponibilita == 'riservato' %}
+                                    <span class="badge bg-secondary">{% trans "Riservato" %}</span>
+                                    <small class="d-block text-muted">🔒 {% trans "Non assegnabile" %}</small>
+                                {% else %}
+                                    {% if ip.stato == 'attivo' and ip.disponibilita == 'usato' and request.GET.evidenzia_anomali == 'on' %}
+                                        <span class="badge bg-danger text-white">{% trans "Usato" %}</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{% trans "Usato" %}</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>{% if ip.vlan %}{{ ip.vlan.numero }} - {{ ip.vlan.nome }}{% else %}-{% endif %}</td>
+                            <td>{{ ip.responsabile|default:"-" }}</td>
+                            <td>{{ ip.utente_finale|default:"-" }}</td>
+                            <td>{{ ip.note|default:"-"|truncatechars:50 }}</td>
+                            <td>
+                                {% if ip.is_virtual|default:False %}
+                                    <span class="text-muted">{% trans "IP non in database" %}</span>
+                                {% else %}
+                                    {{ ip.ultimo_controllo|date:"d/m/Y H:i" }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ip.is_virtual|default:False %}
+                                    <a href="{% url 'richiedi_nuovo_ip' %}?ip={{ ip.ip }}" class="btn btn-sm btn-success">
+                                        <i class="bi bi-plus-circle"></i> {% trans "Richiedi IP" %}
+                                    </a>
+                                    <small class="d-block text-muted mt-1">{% trans "IP valido ma non in database" %}</small>
+                                {% elif ip.is_anomalo %}
+                                    {% if request.GET.evidenzia_anomali == 'on' %}
+                                        <span class="badge bg-danger">{% trans "IP ANOMALO" %}</span>
+                                        <small class="d-block text-muted">{% trans "IP attivo senza responsabile" %}</small>
+                                    {% else %}
+                                        <small class="text-warning">⚠️ {% trans "Non richiedibile" %}</small>
+                                    {% endif %}
+                                {% elif ip.disponibilita == 'riservato' %}
+                                    <span class="badge bg-secondary">{% trans "RISERVATO" %}</span>
+                                    <small class="d-block text-muted">🔒 {% trans "Non richiedibile" %}</small>
+                                {% elif ip.disponibilita == 'libero' %}
+                                    <a href="{% url 'richiedi_nuovo_ip' %}?ip={{ ip.ip }}" class="btn btn-sm btn-success">{% trans "Richiedi questo IP" %}</a>
+                                {% endif %}
+                                {% if not ip.is_virtual|default:False %}
+                                    <a href="{% url 'indirizzo_ip_detail' ip=ip.ip %}" class="btn btn-sm btn-info">{% trans "Dettagli" %}</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center">{% trans "Nessun indirizzo IP trovato" %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Paginazione -->
+            {% if indirizzi.paginator.num_pages > 1 %}
+            <div class="d-flex justify-content-center mt-4">
+                <nav aria-label="{% trans 'Navigazione pagine' %}">
+                    <ul class="pagination">
+                        {% if indirizzi.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1" aria-label="{% trans 'Prima' %}">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ indirizzi.previous_page_number }}" aria-label="{% trans 'Precedente' %}">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&laquo;&laquo;</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&laquo;</span>
+                            </li>
+                        {% endif %}
+                        
+                        {% with ''|center:indirizzi.paginator.num_pages as range %}
+                            {% for _ in range %}
+                                {% with forloop.counter as page_num %}
+                                    {% if page_num > indirizzi.number|add:'-5' and page_num < indirizzi.number|add:'5' %}
+                                        <li class="page-item {% if page_num == indirizzi.number %}active{% endif %}">
+                                            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_num }}">{{ page_num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endfor %}
+                        {% endwith %}
+                        
+                        {% if indirizzi.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ indirizzi.next_page_number }}" aria-label="{% trans 'Successiva' %}">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ indirizzi.paginator.num_pages }}" aria-label="{% trans 'Ultima' %}">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&raquo;</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&raquo;&raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            <div class="text-center mt-2 text-muted">
+                {% trans "Pagina" %} {{ indirizzi.number }} {% trans "di" %} {{ indirizzi.paginator.num_pages }} ({{ indirizzi.paginator.count }} {% trans "indirizzi totali" %})
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Gestione intelligente dei filtri per IP anomali
+    document.addEventListener('DOMContentLoaded', function() {
+        const anomaloSelect = document.getElementById('disponibilita_anomalo');
+        const evidenziaCheckbox = document.getElementById('evidenzia_anomali');
+        
+        // Quando si seleziona "Solo IP anomali", attiva automaticamente l'evidenziazione
+        if (anomaloSelect) {
+            anomaloSelect.addEventListener('change', function() {
+                if (this.value === 'anomalo') {
+                    evidenziaCheckbox.checked = true;
+                }
+            });
+        }
+        
+        // Aggiungi tooltip alle intestazioni ordinabili
+        const sortableHeaders = document.querySelectorAll('.sortable-header');
+        sortableHeaders.forEach(header => {
+            header.setAttribute('title', 'Clicca per ordinare questa colonna');
+        });
+    });
+</script>
+{% endblock %} 

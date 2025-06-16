@@ -1,0 +1,81 @@
+{% extends 'admin/base.html' %}
+{% load i18n static %}
+{% block content %}
+<div>
+    <form action="." method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="module aligned">
+            <h2>{% trans 'Importa da CSV' %}</h2>
+            {% for field in form %}
+                <div class="form-row">
+                    {{ field.errors }}
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <p class="help">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </fieldset>
+        <div class="submit-row">
+            <input type="submit" name="submit" class="default" value="{% trans 'Importa' %}">
+        </div>
+    </form>
+</div>
+<br />
+<div>
+    <h3>Struttura CSV</h3>
+    <hr>
+    
+    {% if opts.app_label == "reti_app" and opts.model_name == "vlan" %}
+    <!-- Istruzioni specifiche per l'importazione delle VLAN -->
+    <h4>Formati CSV supportati per VLAN:</h4>
+    
+    <h5>1. Nuovo formato con Subnets:</h5>
+    <pre>
+"VLAN ID","VLAN Name","Subnets"
+1,default,192.168.1.0/24
+2,VLAN0002,"192.168.2.0/24, 192.168.3.0/24"
+3,VLAN0003,"10.0.1.0/24
+10.0.2.0/24"
+    </pre>
+    
+    <h5>2. Formato originale (vecchio):</h5>
+    <pre>
+"VLAN ID","VLAN Name","Device Count","Port Count"
+1,default,96,2463
+2,VLAN0002,2,3
+    </pre>
+    
+    <p><strong>Note:</strong></p>
+    <ul>
+        <li>Entrambi i formati sono supportati automaticamente</li>
+        <li>Il sistema rileva il formato in base all'intestazione del file CSV</li>
+        <li>I campi "VLAN ID" e "VLAN Name" sono obbligatori in entrambi i formati</li>
+        <li>Nel nuovo formato, "Subnets" può contenere più subnet separate da virgola o nuova linea</li>
+        <li>Nel vecchio formato, i valori "Device Count" e "Port Count" verranno salvati nel campo descrizione</li>
+    </ul>
+    {% else %}
+    <!-- Istruzioni specifiche per l'importazione degli indirizzi IP -->
+    <h4>Formato NUOVO:</h4>
+    <pre>
+IP,MAC Address,Stato,Responsabile,Utente Finale,Note,Ultimo Controllo,Data Scadenza
+192.168.1.1,00:11:22:33:44:55,attivo,nome.cognome@uniroma1.it,Nome Cognome,Note sul dispositivo,2023-01-01 12:00:00,2024-01-01 12:00:00
+    </pre>
+    
+    <h4>Formato ORIGINALE (vecchio Drupal):</h4>
+    <pre>
+Indirizzo IP,Stato,Disponibilita,Mac Address,Mail responsabile,ultimo controllo,note (db access),Utente finale (fleetmanagement)
+192.168.1.1,attivo,libero,00:11:22:33:44:55,nome.cognome@uniroma1.it,01/01/2023,Note sul dispositivo,Nome Cognome
+    </pre>
+    
+    <p><strong>Note:</strong></p>
+    <ul>
+        <li>L'indirizzo IP è l'unico campo obbligatorio</li>
+        <li>Nel formato originale, lo stato può essere "attivo" o "riservato", ogni altra stringa sarà interpretata come "disattivo"</li>
+        <li>La data di ultimo controllo nel formato originale deve seguire il formato italiano (DD/MM/YYYY)</li>
+        <li>Se il responsabile ha un indirizzo email valido, il sistema cercherà di collegare l'indirizzo IP all'utente</li>
+    </ul>
+    {% endif %}
+</div>
+{% endblock %} 

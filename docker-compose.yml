@@ -1,0 +1,106 @@
+services:
+  db:
+    container_name: ipreti-db
+    image: mariadb:10.6
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=reti_db
+      - MYSQL_USER=reti_user
+      - MYSQL_PASSWORD=reti_password
+    ports:
+      - "3307:3306"
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ureti_user", "-preti_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - ipreti-network
+
+  web:
+    container_name: ipreti-web
+    build:
+      context: ./reti-webapp
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-change-this-in-production-d23jk2l3j423lk4j23lk4j23lk4j
+      - ALLOWED_HOSTS=localhost,127.0.0.1,ipreti-web #add the public fqdn of the web server if not using a reverse proxy
+      - CSRF_TRUSTED_ORIGINS=http://localhost:8000,http://ipreti-web #add the public fqdn of the web server if not using a reverse proxy
+      - DB_ENGINE=django.db.backends.mysql
+      - DB_NAME=reti_db
+      - DB_USER=reti_user
+      - DB_PASSWORD=reti_password
+      - DB_HOST=ipreti-db
+      - DB_PORT=3306
+      - TZ=Europe/Rome
+      # Lingua di default dell'applicazione (it o en)
+      - DEFAULT_LANGUAGE=en
+      # Testo personalizzato per il footer (opzionale)
+      - FOOTER_TEXT="My Company"
+      # Configurazioni LDAP
+      - LDAP_SERVER_URI=ldap://ip
+      - LDAP_BIND_DN=
+      - LDAP_BIND_PASSWORD=
+      - LDAP_USER_SEARCH_BASE=
+      - LDAP_USER_SEARCH_FILTER=mail=%(user)s
+      - LDAP_ATTR_FIRST_NAME=givenName
+      - LDAP_ATTR_LAST_NAME=sn
+      - LDAP_ATTR_EMAIL=mail
+      - LDAP_USER_SUFFIX=
+    volumes:
+      - ./reti-webapp:/app
+    ports:
+      - "8200:8000"
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py compilemessages &&
+             gunicorn reti_project.wsgi:application --bind 0.0.0.0:8000"
+    networks:
+      - ipreti-network
+#      - nginx-proxy-manager_default
+
+
+  data-collector:
+    container_name: ipreti-collector
+    build:
+      context: ./reti-companion
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - web
+    environment:
+      - DJANGO_API_BASE_URL=http://ipreti-web:8000/api
+      - DJANGO_BASE_URL=http://ipreti-web:8000
+      - DJANGO_API_TOKEN=
+      - LOG_LEVEL=INFO
+      - SYNC_INTERVAL_MINUTES=30
+      - TZ=Europe/Rome
+    volumes:
+      - data_collector_logs:/var/log/data-collector
+      - /home/f5syncro/data:/data/f5
+    ports:
+      - "8001:8001"
+    networks:
+      - ipreti-network
+#      - nginx-proxy-manager_default
+
+volumes:
+  mariadb_data:
+  data_collector_logs:
+
+
+networks:
+  ipreti-network:
+    driver: bridge
+#  nginx-proxy-manager_default:
+#    external: true

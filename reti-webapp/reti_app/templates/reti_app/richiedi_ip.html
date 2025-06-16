@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Richiedi Nuovo Indirizzo IP" %}{% endblock %}
+
+{% block page_title %}{% trans "Richiedi Nuovo Indirizzo IP" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{% trans "Richiesta Nuovo Indirizzo IP" %}</h6>
+        </div>
+        <div class="card-body">
+            <p class="mb-4">{% trans "Compila il modulo sottostante per richiedere un nuovo indirizzo IP. Una volta inviata la richiesta, riceverai una conferma." %}</p>
+            
+            <form method="post" class="user">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="ip">{% trans "Indirizzo IP (se ne conosci uno disponibile)" %}</label>
+                        <input type="text" class="form-control" id="ip" name="ip" placeholder="{% trans 'es. 192.168.1.1' %}" value="{{ request.GET.ip|default:'' }}">
+                        <small class="form-text text-muted">{% trans "Se lasciato vuoto, ti verrà assegnato un IP disponibile." %}</small>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="mac_address">{% trans "MAC Address (opzionale)" %}</label>
+                        <input type="text" class="form-control" id="mac_address" name="mac_address" placeholder="{% trans 'es. 00:1A:2B:3C:4D:5E' %}">
+                        <small class="form-text text-muted">{% trans "Formato: XX:XX:XX:XX:XX:XX" %}</small>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="responsabile">{% trans "Responsabile" %}</label>
+                        <input type="text" class="form-control" id="responsabile" name="responsabile" placeholder="{% trans 'Nome del responsabile' %}" required value="{{ user.get_full_name }}">
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="email_responsabile">{% trans "Email Responsabile" %}</label>
+                        <input type="email" class="form-control" id="email_responsabile" name="email_responsabile" placeholder="{% trans 'email@esempio.it' %}" required value="{{ user.email }}">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="utente_finale">{% trans "Utente Finale" %}</label>
+                        <input type="text" class="form-control" id="utente_finale" name="utente_finale" placeholder="{% trans 'Nome dell\'utente finale' %}" required value="{{ user.get_full_name }}">
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="vlan_info">{% trans "VLAN" %}</label>
+                        <input type="text" class="form-control" id="vlan_info" disabled value="{% trans 'Assegnazione automatica' %}">
+                        <small class="form-text text-muted">{% trans "La VLAN verrà assegnata automaticamente in base alla subnet dell'IP" %}</small>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="note">{% trans "Note" %}</label>
+                    <textarea class="form-control" id="note" name="note" rows="3" placeholder="{% trans 'Inserisci eventuali note o dettagli aggiuntivi sulla richiesta' %}"></textarea>
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="javascript:history.back()" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> {% trans "Indietro" %}
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> {% trans "Invia Richiesta" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Validate MAC address format
+    document.getElementById('mac_address').addEventListener('blur', function() {
+        let input = this.value.trim();
+        if (input && !input.match(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/)) {
+            this.classList.add('is-invalid');
+            if (!this.nextElementSibling.classList.contains('invalid-feedback')) {
+                let feedback = document.createElement('div');
+                feedback.classList.add('invalid-feedback');
+                feedback.innerText = '{% trans "Formato MAC address non valido. Usa il formato XX:XX:XX:XX:XX:XX" %}';
+                this.parentNode.insertBefore(feedback, this.nextSibling);
+            }
+        } else {
+            this.classList.remove('is-invalid');
+            let feedback = this.nextElementSibling;
+            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                feedback.remove();
+            }
+        }
+    });
+
+    // Validazione IP in tempo reale
+    const ipField = document.getElementById('ip');
+    let timeoutId;
+    
+    ipField.addEventListener('input', function() {
+        clearTimeout(timeoutId);
+        const ip = this.value.trim();
+        
+        // Rimuovi messaggi precedenti
+        removeIpFeedback();
+        
+        if (!ip) return; // Se campo vuoto, non fare nulla
+        
+        // Valida formato IP base
+        if (!isValidIPFormat(ip)) {
+            showIpFeedback('{% trans "Formato IP non valido" %}', 'danger');
+            return;
+        }
+        
+        // Valida range IP
+        const rangeCheck = isValidIPRange(ip);
+        if (!rangeCheck.valid) {
+            showIpFeedback(`✗ ${rangeCheck.message}`, 'danger');
+            return;
+        }
+        
+        // Controlla disponibilità dopo 500ms di inattività
+        timeoutId = setTimeout(() => checkIPAvailability(ip), 500);
+    });
+    
+    function isValidIPFormat(ip) {
+        const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+        if (!ipRegex.test(ip)) return false;
+        
+        const parts = ip.split('.');
+        return parts.every(part => {
+            const num = parseInt(part);
+            return num >= 0 && num <= 255;
+        });
+    }
+    
+    function isValidIPRange(ip) {
+        // Controlla range IP validi dell'università 
+        const parts = ip.split('.').map(num => parseInt(num));
+        const [a, b, c, d] = parts;
+        
+        // Range consentiti (questi dovrebbero essere configurabili)
+        const allowedRanges = [
+            {start: [192, 168, 0, 0], end: [192, 168, 255, 255], name: '192.168.x.x'},
+            {start: [10, 0, 0, 0], end: [10, 255, 255, 255], name: '10.x.x.x'},
+            {start: [172, 16, 0, 0], end: [172, 31, 255, 255], name: '172.16-31.x.x'}
+        ];
+        
+        for (let range of allowedRanges) {
+            if (isIPInRange(parts, range.start, range.end)) {
+                return {valid: true, range: range.name};
+            }
+        }
+        
+        return {
+            valid: false, 
+            message: '{% trans "IP non nel range consentito. Usa range privati (192.168.x.x, 10.x.x.x, 172.16-31.x.x)" %}'
+        };
+    }
+    
+    function isIPInRange(ip, start, end) {
+        for (let i = 0; i < 4; i++) {
+            if (ip[i] < start[i] || ip[i] > end[i]) {
+                return false;
+            }
+            if (ip[i] > start[i] && ip[i] < end[i]) {
+                return true;
+            }
+        }
+        return true;
+    }
+    
+    function checkIPAvailability(ip) {
+        // Mostra loading
+        showIpFeedback('{% trans "Controllo disponibilità..." %}', 'info');
+        
+        // Chiamata AJAX per verificare disponibilità
+        // Utilizziamo il nuovo endpoint dedicato senza autenticazione
+        fetch(`/api/check-ip/?ip=${encodeURIComponent(ip)}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('{% trans "Errore nella verifica" %}');
+        })
+        .then(data => {
+            if (data.exists) {
+                // IP esiste nel database
+                if (data.disponibilita === 'usato' || data.responsabile) {
+                    showIpFeedback(`✗ {% trans "IP già in uso da" %} ${data.responsabile || '{% trans "un altro utente" %}'}`, 'danger');
+                } else if (data.is_anomalo) {
+                    showIpFeedback('✗ {% trans "IP in stato anomalo (contatta l\'amministratore)" %}', 'warning');
+                } else {
+                    showIpFeedback('✓ {% trans "IP disponibile" %}', 'success');
+                }
+            } else {
+                // IP non esiste nel database - può essere richiesto
+                showIpFeedback('✓ {% trans "IP disponibile (nuovo)" %}', 'success');
+            }
+        })
+        .catch(error => {
+            showIpFeedback('{% trans "Errore nella verifica disponibilità" %}', 'warning');
+        });
+    }
+    
+    function showIpFeedback(message, type) {
+        removeIpFeedback();
+        
+        const ipField = document.getElementById('ip');
+        const feedback = document.createElement('div');
+        feedback.classList.add('form-text');
+        feedback.id = 'ip-feedback';
+        
+        if (type === 'success') {
+            feedback.classList.add('text-success');
+        } else if (type === 'danger') {
+            feedback.classList.add('text-danger');
+        } else if (type === 'warning') {
+            feedback.classList.add('text-warning');
+        } else {
+            feedback.classList.add('text-info');
+        }
+        
+        feedback.innerText = message;
+        ipField.parentNode.appendChild(feedback);
+    }
+    
+    function removeIpFeedback() {
+        const existingFeedback = document.getElementById('ip-feedback');
+        if (existingFeedback) {
+            existingFeedback.remove();
+        }
+    }
+</script>
+{% endblock %} 

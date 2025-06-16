@@ -1,0 +1,122 @@
+:root {
+    --sapienza-red: #822433;
+    --sapienza-gold: #D4B66A;
+}
+
+/* Stile per la barra laterale */
+#sidebar {
+    min-height: 100vh;
+    background-color: var(--sapienza-red) !important;
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: #f8f9fa;
+    padding: 0.75rem 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-left: 4px solid var(--sapienza-gold);
+}
+
+.sidebar .nav-link i {
+    margin-right: 0.5rem;
+}
+
+/* Stile per le card statistiche */
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+.border-left-danger {
+    border-left: 0.25rem solid #e74a3b !important;
+}
+
+/* Stile per le tabelle */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Personalizzazione badge */
+.badge {
+    padding: 0.5em 0.8em;
+    font-weight: 500;
+}
+
+/* Stile per la pagina di login */
+.login-form {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Pulsanti primari con il colore dell'università */
+.btn-primary {
+    background-color: var(--sapienza-red);
+    border-color: var(--sapienza-red);
+}
+
+.btn-primary:hover {
+    background-color: #6a1d2a;
+    border-color: #6a1d2a;
+}
+
+.text-primary {
+    color: var(--sapienza-red) !important;
+}
+
+/* Card header */
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+/* Sovrascrivi alcuni stili Bootstrap */
+.bg-primary {
+    background-color: var(--sapienza-red) !important;
+}
+
+/* Stile per i link */
+a {
+    color: var(--sapienza-red);
+    text-decoration: none;
+}
+
+a:hover {
+    color: #6a1d2a;
+    text-decoration: underline;
+}
+
+/* Responsive per mobile */
+@media (max-width: 767.98px) {
+    #sidebar {
+        min-height: auto;
+    }
+}
+
+/* Animazioni */
+.alert {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+} 

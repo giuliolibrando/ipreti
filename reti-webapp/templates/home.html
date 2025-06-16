@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Gestione Indirizzi IP{% endblock %}
+
+{% block content %}
+<div class="welcome-section">
+    <h2>Benvenuto nel Sistema di Gestione Indirizzi IP</h2>
+    <p>Questa applicazione consente di gestire e monitorare gli indirizzi IP nella rete dell'università.</p>
+</div>
+
+<div class="features-section">
+    <h3>Funzionalità Principali</h3>
+    <div class="feature-cards">
+        <div class="card">
+            <h4>Gestione Indirizzi IP</h4>
+            <p>Aggiungi, modifica ed elimina indirizzi IP. Visualizza dettagli come MAC address e stato.</p>
+        </div>
+        <div class="card">
+            <h4>Monitoraggio Stato</h4>
+            <p>Monitora lo stato attivo/inattivo degli indirizzi IP e traccia l'ultima verifica.</p>
+        </div>
+        <div class="card">
+            <h4>Assegnazione Responsabili</h4>
+            <p>Assegna responsabili agli indirizzi IP per facilitare la gestione.</p>
+        </div>
+    </div>
+</div>
+
+<div class="actions-section">
+    <h3>Inizia subito</h3>
+    <p>Scegli una delle seguenti opzioni per iniziare a utilizzare il sistema:</p>
+    <div class="action-buttons">
+        <a href="{% url 'admin:index' %}" class="btn">Accedi al Pannello Amministrativo</a>
+        <a href="/api/" class="btn">Esplora le API</a>
+        <a href="/swagger/" class="btn">Documentazione API</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .welcome-section {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .welcome-section h2 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .features-section {
+        margin-bottom: 3rem;
+    }
+    
+    .feature-cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+    
+    .card {
+        flex: 1 0 300px;
+        max-width: 350px;
+        padding: 1.5rem;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .card h4 {
+        color: var(--secondary-color);
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .actions-section {
+        text-align: center;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .action-buttons {
+        margin-top: 1.5rem;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    @media (max-width: 768px) {
+        .feature-cards {
+            flex-direction: column;
+        }
+        
+        .card {
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %} 

@@ -1,0 +1,238 @@
+# ===============================================
+# IP NETWORK MANAGEMENT - DATA COLLECTOR CONFIG
+# ===============================================
+#
+# This file shows example configuration for the companion data collector
+# Copy this to config.py and modify according to your network setup
+#
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# ===============================================
+# DJANGO API CONFIGURATION
+# ===============================================
+
+# Django API Base URL - where your Django web application is running
+DJANGO_API_BASE_URL = os.getenv('DJANGO_API_BASE_URL', 'http://ipreti-web:8000/api')
+
+# API Authentication Token - create this in Django admin under Tokens
+DJANGO_API_TOKEN = os.getenv('DJANGO_API_TOKEN', 'your_api_token_here')
+
+# ===============================================
+# NETWORK DEVICES - ROUTERS (SNMPv2c)
+# ===============================================
+
+ROUTERS = {
+    # Main Cisco Router Example
+    'MainRouter': {
+        'ip': '192.168.1.1',                    # Router IP address
+        'community': 'public',                  # SNMP community string
+        'query': '.1.3.6.1.2.1.3.1.1.2',      # ARP table OID
+        'type': 'snmp_v2c'                     # SNMP version
+    },
+ 
+    
+    # PfSense External Providers
+    'PfSense_Providers': {
+        'ip': '172.16.1.1',
+        'community': 'provider_mon',
+        'query': '1.3.6.1.2.1.4.22.1.2',
+        'type': 'snmp_v2c'
+    }
+}
+
+# ===============================================
+# NETWORK DEVICES - FIREWALLS (SNMPv3)
+# ===============================================
+
+FIREWALLS = {
+    # Primary Gateway Example
+    'gateway_01': {
+        'ip': '192.168.1.1',                  # Firewall IP
+        'secname': 'monitoring_user',           # SNMPv3 username
+        'authprotocol': 'SHA',                  # Authentication protocol (SHA/MD5)
+        'authpassword': 'your_secure_password', # Authentication password
+        'query': '1.3.6.1.2.1.3.1.1.2',       # ARP table OID
+        'contexts': [                           # SNMP contexts (for virtual systems)
+            'vsys1_context',
+            'vsys2_context'
+        ]
+    }
+}
+
+# ===============================================
+# F5 LOAD BALANCER FILES
+# ===============================================
+
+# F5 Load Balancers that export MAC address tables to files
+F5_FILES = {
+    # Production F5 - Building 1
+    'f5_prod_b1': '/data/f5/production_building1_mac.txt',
+    
+    # Production F5 - Building 2  
+    'f5_prod_b2': '/data/f5/production_building2_mac.txt',
+    
+    # Development F5
+    'f5_dev': '/data/f5/development_mac.txt',
+    
+    # DMZ F5
+    'f5_dmz': '/data/f5/dmz_load_balancer_mac.txt'
+}
+
+# ===============================================
+# LOGGING CONFIGURATION
+# ===============================================
+
+# Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
+
+# Log file location (must be writable by container user)
+LOG_FILE = '/var/log/data-collector/collector.log'
+
+# Additional log files for specific components
+SNMP_LOG_FILE = '/var/log/data-collector/snmp.log'
+API_LOG_FILE = '/var/log/data-collector/api.log'
+CRON_LOG_FILE = '/var/log/data-collector/cron.log'
+
+# ===============================================
+# SCHEDULING CONFIGURATION
+# ===============================================
+
+# How often to synchronize with all devices (in minutes)
+SYNC_INTERVAL_MINUTES = int(os.getenv('SYNC_INTERVAL_MINUTES', 30))
+
+# Individual device collection intervals (in minutes)
+ROUTER_SCAN_INTERVAL = 15      # Scan routers every 15 minutes
+FIREWALL_SCAN_INTERVAL = 20    # Scan firewalls every 20 minutes  
+F5_SCAN_INTERVAL = 5           # Process F5 files every 5 minutes
+
+# Maintenance tasks intervals
+CLEANUP_INTERVAL_HOURS = 24    # Network cleanup every 24 hours
+RELEASE_OLD_IPS_DAYS = 30      # Release IPs inactive for 30+ days
+
+# ===============================================
+# PERFORMANCE TUNING
+# ===============================================
+
+# SNMP timeout settings (in seconds)
+SNMP_TIMEOUT = 5
+SNMP_RETRIES = 3
+
+# API request settings
+API_TIMEOUT = 30
+API_MAX_RETRIES = 3
+API_BATCH_SIZE = 100          # Process IPs in batches of 100
+
+# Memory limits
+MAX_IPS_IN_MEMORY = 10000     # Maximum IPs to hold in memory
+
+# ===============================================
+# SECURITY SETTINGS
+# ===============================================
+
+# SNMP security
+DEFAULT_SNMP_COMMUNITY = 'public'
+SNMP_V3_AUTH_PROTOCOLS = ['SHA', 'MD5']
+
+# API security
+API_VERIFY_SSL = True
+API_CLIENT_CERT = None
+
+# Network restrictions
+ALLOWED_IP_RANGES = [
+    '192.168.0.0/16',    # Private Class C
+    '172.16.0.0/12',     # Private Class B  
+    '10.0.0.0/8'         # Private Class A
+]
+
+# ===============================================
+# MONITORING & ALERTING
+# ===============================================
+
+# Health check settings
+HEALTH_CHECK_INTERVAL = 300   # Check health every 5 minutes
+MAX_CONSECUTIVE_FAILURES = 3  # Alert after 3 consecutive failures
+
+# Statistics collection
+ENABLE_STATS_COLLECTION = True
+STATS_RETENTION_DAYS = 30
+
+# Error reporting
+ENABLE_ERROR_EMAILS = False
+ERROR_EMAIL_RECIPIENTS = [
+    'admin@example.com',
+    'network-team@example.com'
+]
+
+# ===============================================
+# ENVIRONMENT-SPECIFIC OVERRIDES
+# ===============================================
+
+# Development environment
+if os.getenv('ENVIRONMENT') == 'development':
+    LOG_LEVEL = 'DEBUG'
+    SYNC_INTERVAL_MINUTES = 5
+    API_VERIFY_SSL = False
+
+# Production environment  
+elif os.getenv('ENVIRONMENT') == 'production':
+    LOG_LEVEL = 'INFO'
+    ENABLE_ERROR_EMAILS = True
+    API_VERIFY_SSL = True
+
+# Testing environment
+elif os.getenv('ENVIRONMENT') == 'testing':
+    LOG_LEVEL = 'DEBUG'
+    SYNC_INTERVAL_MINUTES = 1
+    ENABLE_STATS_COLLECTION = False
+
+# ===============================================
+# USAGE INSTRUCTIONS
+# ===============================================
+
+"""
+SETUP INSTRUCTIONS:
+
+1. Copy this file to config.py
+2. Update IP addresses for your network devices
+3. Set correct SNMP community strings and credentials
+4. Configure your Django API URL and token
+5. Adjust file paths for F5 load balancers
+6. Set appropriate log levels and intervals
+7. Test connectivity before deploying
+
+ENVIRONMENT VARIABLES:
+Create a .env file with:
+
+DJANGO_API_BASE_URL=http://your-django-server:8000/api
+DJANGO_API_TOKEN=your_secret_token_here
+LOG_LEVEL=INFO
+SYNC_INTERVAL_MINUTES=30
+ENVIRONMENT=production
+
+DOCKER VOLUMES:
+Make sure these directories are mounted:
+- /var/log/data-collector (for logs)
+- /data/f5 (for F5 MAC address files)
+
+SECURITY NOTES:
+- Use strong SNMP community strings
+- Rotate API tokens regularly  
+- Limit SNMP access with firewall rules
+- Monitor logs for unauthorized access attempts
+- Use SNMPv3 where possible for better security
+
+TROUBLESHOOTING:
+- Check logs in /var/log/data-collector/
+- Verify network connectivity to devices
+- Test SNMP access manually with snmpwalk
+- Validate API token in Django admin
+- Check container resource limits
+"""
+
+# ===============================================
+# END OF CONFIGURATION
+# =============================================== 

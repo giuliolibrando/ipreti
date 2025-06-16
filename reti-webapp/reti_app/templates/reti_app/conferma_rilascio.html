@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Conferma Rilascio IP{% endblock %}
+
+{% block page_title %}Conferma Rilascio IP{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-danger">Conferma Rilascio Indirizzo IP</h6>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <h5><i class="bi bi-exclamation-triangle"></i> Attenzione!</h5>
+                <p class="mb-0">Stai per rilasciare l'indirizzo IP <strong>{{ indirizzo.ip }}</strong>.</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Dettagli IP da rilasciare:</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>IP:</strong> {{ indirizzo.ip }}</li>
+                        <li><strong>MAC Address:</strong> {{ indirizzo.mac_address|default:"-" }}</li>
+                        <li><strong>Stato:</strong> {{ indirizzo.get_stato_display }}</li>
+                        <li><strong>VLAN:</strong> {% if indirizzo.vlan %}{{ indirizzo.vlan.numero }} - {{ indirizzo.vlan.nome }}{% else %}-{% endif %}</li>
+                        <li><strong>Responsabile:</strong> {{ indirizzo.responsabile|default:"-" }}</li>
+                        <li><strong>Utente Finale:</strong> {{ indirizzo.utente_finale|default:"-" }}</li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-6">
+                    <h6>Cosa succederà:</h6>
+                    <ul class="text-danger">
+                        <li>L'IP verrà impostato come <strong>"Libero"</strong></li>
+                        <li>Il responsabile verrà rimosso</li>
+                        <li>L'utente finale verrà rimosso</li>
+                        <li>L'assegnazione a te verrà rimossa</li>
+                        <li>Le note personali verranno rimosse</li>
+                        <li>L'IP diventerà disponibile per altri utenti</li>
+                    </ul>
+                    <p class="text-danger"><strong>Questa operazione NON può essere annullata!</strong></p>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'indirizzi_ip_assegnati' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Annulla
+                </a>
+                
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-x-circle"></i> Conferma Rilascio IP
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

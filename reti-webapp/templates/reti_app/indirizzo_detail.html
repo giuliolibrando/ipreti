@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Dettaglio IP" %} {{ indirizzo.ip }}{% endblock %}
+
+{% block page_title %}{% trans "Dettaglio IP" %} {{ indirizzo.ip }}{% endblock %}
+
+{% block content %}
+
+{% if indirizzo.is_anomalo %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-exclamation-triangle-fill me-2" style="font-size: 1.5rem;"></i>
+        <div>
+            <strong>⚠️ {% trans "IP ANOMALO RILEVATO" %}</strong><br>
+            <small>{% trans "Questo indirizzo IP risulta" %} <strong>{% trans "ATTIVO" %}</strong> ({% trans "sta navigando in rete" %}) {% trans "ma è" %} <strong>{% trans "LIBERO" %}</strong> 
+            {% if not indirizzo.responsabile %}{% trans "o non ha un responsabile assegnato" %}{% endif %}. 
+            {% trans "Questa situazione indica un possibile problema di configurazione che richiede attenzione immediata." %}</small>
+        </div>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Chiudi' %}"></button>
+</div>
+{% endif %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">{% trans "Informazioni Indirizzo IP" %}</h6>
+        
+        <div class="d-flex gap-2">
+            {% if can_edit_via_admin %}
+            <!-- Admin/Staff: accesso admin sempre disponibile -->
+            <a href="{% url 'admin:reti_app_indirizzoip_change' indirizzo.ip %}" class="btn btn-sm btn-primary">
+                <i class="bi bi-gear"></i> {% trans "Admin" %}
+            </a>
+            {% endif %}
+            
+            {% if can_edit_via_form %}
+            <!-- Form edit: disponibile per tutti i proprietari dell'IP -->
+            <span class="badge bg-success">
+                <i class="bi bi-pencil"></i> {% trans "Modifica abilitata" %}
+            </span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <h5 class="font-weight-bold">{% trans "Informazioni Principali" %}</h5>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th class="w-25">{% trans "Indirizzo IP" %}</th>
+                            <td>{{ indirizzo.ip }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "MAC Address" %}</th>
+                            <td>{{ indirizzo.mac_address|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Stato Rete" %}</th>
+                            <td>
+                                {% if indirizzo.stato == 'attivo' %}
+                                    <span class="badge bg-success">{% trans "Attivo" %}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{% trans "Disattivo" %}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Disponibilità" %}</th>
+                            <td>
+                                {% if indirizzo.disponibilita == 'libero' %}
+                                    <span class="badge bg-info">{% trans "Libero" %}</span>
+                                {% elif indirizzo.disponibilita == 'riservato' %}
+                                    <span class="badge bg-secondary">{% trans "Riservato" %}</span>
+                                    <small class="d-block text-muted">🔒 {% trans "Non assegnabile temporaneamente" %}</small>
+                                {% else %}
+                                    <span class="badge bg-warning">{% trans "Usato" %}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "VLAN" %}</th>
+                            <td>
+                                {% if indirizzo.vlan %}
+                                    {{ indirizzo.vlan.numero }} - {{ indirizzo.vlan.nome }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="mb-3">
+                    <h5 class="font-weight-bold">{% trans "Informazioni Temporali" %}</h5>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th class="w-25">{% trans "Ultimo Controllo" %}</th>
+                            <td>{{ indirizzo.ultimo_controllo|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Data Scadenza" %}</th>
+                            <td>
+                                {% if indirizzo.data_scadenza %}
+                                    {{ indirizzo.data_scadenza|date:"d/m/Y" }}
+                                    {% if indirizzo.is_scaduto %}
+                                        <span class="badge bg-danger">{% trans "Scaduto" %}</span>
+                                    {% elif indirizzo.giorni_alla_scadenza < 30 %}
+                                        <span class="badge bg-warning">{% trans "Scade tra" %} {{ indirizzo.giorni_alla_scadenza }} {% trans "giorni" %}</span>
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Data Creazione" %}</th>
+                            <td>{{ indirizzo.data_creazione|date:"d/m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Ultima Modifica" %}</th>
+                            <td>{{ indirizzo.data_modifica|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <h5 class="font-weight-bold">{% trans "Assegnazione" %}</h5>
+                    
+                    {% if can_edit_via_form %}
+                    <!-- Form di modifica per utenti normali sui propri IP -->
+                    <form method="post" action="{% url 'indirizzo_ip_detail' ip=indirizzo.ip %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="responsabile" class="form-label">{% trans "Responsabile" %}</label>
+                            <input type="email" class="form-control" id="responsabile" name="responsabile" 
+                                   value="{{ indirizzo.responsabile|default:'' }}" placeholder="{% trans 'Inserisci email responsabile' %}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="utente_finale" class="form-label">{% trans "Utente Finale" %}</label>
+                            <input type="text" class="form-control" id="utente_finale" name="utente_finale" 
+                                   value="{{ indirizzo.utente_finale|default:'' }}" placeholder="{% trans 'Inserisci nome utente finale' %}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="note" class="form-label">{% trans "Note" %}</label>
+                            <textarea class="form-control" id="note" name="note" rows="4" 
+                                      placeholder="{% trans 'Inserisci note aggiuntive' %}">{{ indirizzo.note|default:'' }}</textarea>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-floppy"></i> {% trans "Salva Modifiche" %}
+                            </button>
+                        </div>
+                    </form>
+                    {% else %}
+                    <!-- Vista sola lettura -->
+                    <table class="table table-bordered">
+                        <tr>
+                            <th class="w-25">{% trans "Responsabile" %}</th>
+                            <td>{{ indirizzo.responsabile|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Utente Finale" %}</th>
+                            <td>{{ indirizzo.utente_finale|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Assegnato a" %}</th>
+                            <td>
+                                {% if indirizzo.assegnato_a_utente %}
+                                    {{ indirizzo.assegnato_a_utente.get_full_name|default:indirizzo.assegnato_a_utente.username }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                    {% endif %}
+                </div>
+                
+                {% if can_edit_via_form %}
+                <!-- Note già incluse nel form sopra per utenti che possono modificare -->
+                {% else %}
+                <div class="mb-3">
+                    <h5 class="font-weight-bold">{% trans "Note" %}</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            {% if indirizzo.note %}
+                                {{ indirizzo.note|linebreaksbr }}
+                            {% else %}
+                                <em>{% trans "Nessuna nota disponibile" %}</em>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between mt-4">
+    <a href="{% url 'indirizzi_ip_list' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> {% trans "Torna alla lista" %}
+    </a>
+    
+    {% if can_edit_via_admin %}
+    <div>
+        <form method="post" action="{% url 'admin:reti_app_indirizzoip_delete' indirizzo.ip %}" style="display:inline-block;" onsubmit="return confirmDelete()">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash"></i> {% trans "Elimina" %}
+            </button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function confirmDelete() {
+    return confirm('{% trans "Sei sicuro di voler eliminare questo indirizzo IP?" %}');
+}
+</script>
+
+{% endblock %} 

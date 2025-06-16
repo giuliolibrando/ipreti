@@ -1,0 +1,9 @@
+requests==2.31.0
+netaddr==0.8.0
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
+pysnmp==4.4.12
+snimpy==0.8.13
+schedule==1.2.0
+python-dotenv==1.0.0
+flask==2.3.3 

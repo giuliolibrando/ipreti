@@ -1,0 +1,420 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Dashboard" %} - IP Reti{% endblock %}
+{% block page_title %}{% trans "Dashboard" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+.hover-lift {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+}
+
+a .card:hover .h5 {
+    color: inherit !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% if is_staff %}
+    <!-- DASHBOARD AMMINISTRATORE -->
+    <div class="col-md-6 col-xl-3 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            {% trans "IP Totali" %}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ip_totali_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-globe fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-xl-3 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            {% trans "IP Attivi" %}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ip_attivi_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-check-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-xl-3 mb-4">
+        <!-- Box cliccabile per IP Assegnati ma Non Usati -->
+        <a href="{% url 'ip_assegnati_non_usati' %}" class="text-decoration-none">
+            <div class="card border-left-warning shadow h-100 py-2 hover-lift">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                {% trans "IP Assegnati ma Non Usati" %}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ip_assegnati_non_usati_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    
+    <div class="col-md-6 col-xl-3 mb-4">
+        <!-- Box cliccabile per IP in Scadenza -->
+        <a href="{% url 'ip_in_scadenza_admin' %}" class="text-decoration-none">
+            <div class="card border-left-info shadow h-100 py-2 hover-lift">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                {% trans "IP in Scadenza" %}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ip_in_scadenza_admin_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-calendar-x fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    
+    {% else %}
+    <!-- DASHBOARD UTENTE NORMALE -->
+    <div class="col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            {% trans "IP Assegnati" %}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ip_assegnati_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-person-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            {% trans "IP in Scadenza" %}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ip_in_scadenza_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-calendar-x fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if is_staff %}
+<!-- SEZIONE ADMIN -->
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">{% trans "IP Recentemente Modificati" %}</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>{% trans "IP" %}</th>
+                                <th>{% trans "Stato" %}</th>
+                                <th>{% trans "Responsabile" %}</th>
+                                <th>{% trans "Note" %}</th>
+                                <th>{% trans "Ultima modifica" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ip in ip_recenti %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'indirizzo_ip_detail' ip=ip.ip %}">{{ ip.ip }}</a>
+                                </td>
+                                <td>
+                                    <span class="badge {% if ip.stato == 'attivo' %}bg-success{% elif ip.stato == 'riservato' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                        {{ ip.get_stato_display }}
+                                    </span>
+                                </td>
+                                <td>{{ ip.responsabile|default_if_none:"" }}</td>
+                                <td>{{ ip.note|default_if_none:""|truncatechars:30 }}</td>
+                                <td>{{ ip.data_modifica|date:"d/m/Y H:i" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">{% trans "Nessun indirizzo IP modificato di recente." %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{% trans "Stato Indirizzi IP" %}</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie pt-4">
+                    <canvas id="ipStatusPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{% trans "IP in Scadenza" %}</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>{% trans "IP" %}</th>
+                                <th>{% trans "Responsabile" %}</th>
+                                <th>{% trans "Scadenza" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ip in ip_in_scadenza %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'indirizzo_ip_detail' ip=ip.ip %}">{{ ip.ip }}</a>
+                                </td>
+                                <td>{{ ip.responsabile|default_if_none:"" }}</td>
+                                <td>{{ ip.data_scadenza|date:"d/m/Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">{% trans "Nessun indirizzo IP in scadenza nei prossimi 30 giorni." %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{% trans "VLAN più utilizzate" %}</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>{% trans "VLAN" %}</th>
+                                <th>{% trans "Nome" %}</th>
+                                <th>{% trans "Indirizzi IP" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vlan in vlan_stats %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'vlan_detail' vlan_numero=vlan.numero %}" class="text-decoration-none">
+                                        <strong>{{ vlan.numero }}</strong>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'vlan_detail' vlan_numero=vlan.numero %}" class="text-decoration-none">
+                                        {{ vlan.nome }}
+                                    </a>
+                                </td>
+                                <td>{{ vlan.num_ip }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">{% trans "Nessuna VLAN disponibile." %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<!-- SEZIONE UTENTE NORMALE -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{% trans "I tuoi indirizzi IP" %}</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>{% trans "IP" %}</th>
+                                <th>{% trans "Stato" %}</th>
+                                <th>{% trans "Utente finale" %}</th>
+                                <th>{% trans "VLAN" %}</th>
+                                <th>{% trans "Note" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ip in ip_assegnati %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'indirizzo_ip_detail' ip=ip.ip %}">{{ ip.ip }}</a>
+                                </td>
+                                <td>
+                                    <span class="badge {% if ip.stato == 'attivo' %}bg-success{% elif ip.stato == 'riservato' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                        {{ ip.get_stato_display }}
+                                    </span>
+                                </td>
+                                <td>{{ ip.utente_finale|default_if_none:"-" }}</td>
+                                <td>{% if ip.vlan %}{{ ip.vlan.nome }}{% else %}-{% endif %}</td>
+                                <td>{{ ip.note|default_if_none:""|truncatechars:30 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">{% trans "Non hai ancora indirizzi IP assegnati." %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-warning">{% trans "IP in scadenza" %}</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>{% trans "IP" %}</th>
+                                <th>{% trans "Stato" %}</th>
+                                <th>{% trans "Scadenza" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ip in ip_in_scadenza %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'indirizzo_ip_detail' ip=ip.ip %}">{{ ip.ip }}</a>
+                                </td>
+                                <td>
+                                    <span class="badge {% if ip.stato == 'attivo' %}bg-success{% elif ip.stato == 'riservato' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                        {{ ip.get_stato_display }}
+                                    </span>
+                                </td>
+                                <td>{{ ip.data_scadenza|date:"d/m/Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">{% trans "Non hai indirizzi IP in scadenza nei prossimi 30 giorni." %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if is_staff %}
+<script>
+// Traduzioni
+var labelAttivi = "{% trans 'Attivi' %}";
+var labelAssegnatiNonUsati = "{% trans 'Assegnati Non Usati' %}";
+var labelInScadenza = "{% trans 'In Scadenza' %}";
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Dati per il grafico a torta - aggiornato con nuove metriche
+    const ctx = document.getElementById('ipStatusPieChart').getContext('2d');
+    const statusPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: [labelAttivi, labelAssegnatiNonUsati, labelInScadenza],
+            datasets: [{
+                data: [{{ ip_attivi_count }}, {{ ip_assegnati_non_usati_count }}, {{ ip_in_scadenza_admin_count }}],
+                backgroundColor: ['#1cc88a', '#f6c23e', '#36b9cc'],
+                hoverBackgroundColor: ['#17a673', '#dda20a', '#258391'],
+                hoverBorderColor: "rgba(234, 236, 244, 1)"
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    display: true
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            var label = context.label || '';
+                            var value = context.raw || 0;
+                            var total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            var percentage = Math.round((value / total) * 100);
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endif %}
+{% endblock %} 

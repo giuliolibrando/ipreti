@@ -1,0 +1,103 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h1>{{ title }}</h1>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h4>Istruzioni</h4>
+                        {% if opts.model_name == 'vlan' %}
+                        <p>Carica un file CSV con l'elenco delle VLAN da importare.</p>
+                        <p>Il file deve essere formattato con le seguenti colonne:</p>
+                        <pre>"VLAN ID","VLAN Name","Device Count","Port Count"
+1,default,96,2463
+2,VLAN0002,2,3</pre>
+                        {% elif opts.model_name == 'indirizzoip' %}
+                        <p>Carica un file CSV con l'elenco degli indirizzi IP da importare.</p>
+                        <p>Sono supportati due formati:</p>
+                        
+                        <div id="formato-nuovo">
+                            <h5>Nuovo formato</h5>
+                            <pre>IP,MAC Address,Stato,Responsabile,Utente Finale,Note,Ultimo Controllo,Data Scadenza
+192.168.1.1,AA:BB:CC:DD:EE:FF,attivo,admin@example.com,Mario Rossi,Server di test,2023-01-01 12:00:00,2024-01-01 12:00:00
+10.0.0.1,,riservato,tech@example.com,Dipartimento IT,Router principale,2023-02-15 10:30:00,</pre>
+                            <p>Note sul nuovo formato:</p>
+                            <ul>
+                                <li><strong>Stato</strong> deve essere uno tra: attivo, disattivo, riservato</li>
+                                <li><strong>Date</strong> devono essere nel formato: YYYY-MM-DD HH:MM:SS</li>
+                                <li>I campi diversi da IP possono essere lasciati vuoti</li>
+                            </ul>
+                        </div>
+                        
+                        <div id="formato-originale">
+                            <h5>Formato originale</h5>
+                            <pre>Indirizzo IP,Stato,Disponibilita,Mac Address,Mail responsabile,ultimo controllo,note (db access),Utente finale (fleetmanagement)
+192.168.99.99,disattivo,libero,,undefined,29/07/2015,,
+192.168.99.98,disattivo,libero,,undefined,29/07/2015,,</pre>
+                            <p>Note sul formato originale:</p>
+                            <ul>
+                                <li>Le date sono in formato italiano (DD/MM/YYYY)</li>
+                                <li>I valori "undefined" verranno trattati come valori vuoti</li>
+                                <li>Lo stato verrà convertito automaticamente nei valori attivo, disattivo o riservato</li>
+                            </ul>
+                        </div>
+                        
+                        {% else %}
+                        <p>Carica un file CSV seguendo il formato corretto per questo tipo di dati.</p>
+                        {% endif %}
+                    </div>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            {% if format_field_hidden %}
+                                {{ form.csv_file }}
+                                <input type="hidden" name="format_choice" value="nuovo">
+                            {% else %}
+                                {{ form.as_p }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">{% trans "Importa CSV" %}</button>
+                            <a href="{% url 'admin:'|add:app_label|add:'_'|add:opts.model_name|add:'_changelist' %}" class="btn btn-secondary">
+                                {% trans "Annulla" %}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        var formatSelect = document.querySelector('select[name="format_choice"]');
+        if (formatSelect) {
+            const formatNuovo = document.getElementById('formato-nuovo');
+            const formatoOriginale = document.getElementById('formato-originale');
+            
+            function updateVisibility() {
+                if (formatSelect.value === 'nuovo') {
+                    formatNuovo.style.display = 'block';
+                    formatoOriginale.style.display = 'none';
+                } else {
+                    formatNuovo.style.display = 'none';
+                    formatoOriginale.style.display = 'block';
+                }
+            }
+            
+            // Initial update
+            updateVisibility();
+            
+            // Update on change
+            formatSelect.addEventListener('change', updateVisibility);
+        }
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,12 @@
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# Data Collector Cron Jobs
+# Run full network update every 30 minutes
+*/30 * * * * python /app/scripts/data_collector.py -c update >> /var/log/data-collector/cron.log 2>&1
+# Run network cleanup every 50 minutes  
+*/50 * * * * python /app/scripts/network_cleanup.py >> /var/log/data-collector/cleanup.log 2>&1
+# Release old inactive IPs daily at 3:00 AM (30 days threshold)
+0 3 * * * python /app/scripts/release_old_ips.py --days 30 >> /var/log/data-collector/release_old_ips.log 2>&1
+# Log rotation daily at midnight
+0 0 * * * find /var/log/data-collector -name "*.log" -size +100M -exec truncate -s 0 {} \; 
+# Assign VLANs every 30 minutes at 2:30 AM
+*/30 * * * * python /app/scripts/vlan_assigner.py > /var/log/data-collector/vlan.log 2>&1

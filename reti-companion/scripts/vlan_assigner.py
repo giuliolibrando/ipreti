@@ -155,13 +155,6 @@ def update_ip_vlans():
         
         logger.debug(f"IP {ip_addr}: current VLAN={current_vlan_num}, found VLAN={found_vlan}")
         
-        # 2. Find the VLAN this IP should belong to
-        found_vlan_obj = None
-        for vlan in vlans:
-            if vlan['numero'] == found_vlan:
-                found_vlan_obj = ipaddress.IPv4Network(vlan['subnets'][0])
-                break
-        
         # 3. Analyze and update if necessary
         if found_vlan:
             if current_vlan_num == found_vlan:
